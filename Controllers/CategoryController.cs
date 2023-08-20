@@ -40,6 +40,7 @@ namespace PetProject.Controllers
             {
                 _context.Categories.Add(category);
                 _context.SaveChanges();
+                TempData["success"] = "Category created successfully";
                 return RedirectToAction("Index");
             }
 
@@ -79,6 +80,7 @@ namespace PetProject.Controllers
             {
                 _context.Categories.Update(category);
                 _context.SaveChanges();
+                TempData["success"] = "Category updates successfully";
                 return RedirectToAction("Index");
             }
 
@@ -112,6 +114,7 @@ namespace PetProject.Controllers
 
             _context.Categories.Remove(categoryToDelete);
             _context.SaveChanges();
+            TempData["success"] = "Category deleted successfully";
             return RedirectToAction("Index");
         }
     }
