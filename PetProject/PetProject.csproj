@@ -20,4 +20,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PetProject.DataAccess\PetProject.DataAccess.csproj" />
+    <ProjectReference Include="..\PetProject.Models\PetProject.Models.csproj" />
+    <ProjectReference Include="..\PetProject.Utility\PetProject.Utility.csproj" />
+  </ItemGroup>
+
 </Project>

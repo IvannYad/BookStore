@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PetProject.Data;
+using PetProject.DataAccess.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
