@@ -22,26 +22,29 @@ namespace PetProject.DataAccess.Repository
         }
         public IEnumerable<T> GetAll()
         {
-            return _dbSet;
+            IQueryable<T> query = _dbSet;
+            return query.ToList();
         }
         public T Get(Expression<Func<T, bool>> filter)
         {
-            throw new NotImplementedException();
+            IQueryable<T> query = _dbSet;
+            query = query.Where(filter);
+            return query.FirstOrDefault();
         }
 
         public void Add(T item)
         {
-            throw new NotImplementedException();
+            _dbSet.Add(item);
         }
 
         public void Remove(T item)
         {
-            throw new NotImplementedException();
+            _dbSet.Remove(item);
         }
 
         public void RemoveRange(IEnumerable<T> entities)
         {
-            throw new NotImplementedException();
+            _dbSet.RemoveRange(entities);
         }
     }
 }
