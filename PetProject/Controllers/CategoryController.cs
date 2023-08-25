@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PetProject.DataAccess.Data;
+using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
 using System.Text.RegularExpressions;
 
@@ -7,16 +8,16 @@ namespace PetProject.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public CategoryController(ApplicationDbContext context)
+        public CategoryController(ICategoryRepository repository)
         {
-            _context = context;
+            _categoryRepository = repository;
         }
 
         public IActionResult Index()
         {
-            List<Category> categoryList = _context.Categories.OrderBy(c => c.DisplayOrder).ToList();
+            List<Category> categoryList = _categoryRepository.GetAll().OrderBy(c => c.DisplayOrder).ToList();
             return View(categoryList);
         }
 
@@ -38,8 +39,8 @@ namespace PetProject.Controllers
             }
             if (ModelState.IsValid)
             {
-                _context.Categories.Add(category);
-                _context.SaveChanges();
+                _categoryRepository.Add(category);
+                _categoryRepository.Save();
                 TempData["success"] = "Category created successfully";
                 return RedirectToAction("Index");
             }
@@ -54,7 +55,7 @@ namespace PetProject.Controllers
                 return NotFound();
             }
 
-            Category? categoryToEdit = _context.Categories.Find(id);
+            Category? categoryToEdit = _categoryRepository.Get(c => c.Id == id);
             if (categoryToEdit is null)
             {
                 return NotFound();
@@ -78,8 +79,8 @@ namespace PetProject.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Categories.Update(category);
-                _context.SaveChanges();
+                _categoryRepository.Update(category);
+                _categoryRepository.Save();
                 TempData["success"] = "Category updates successfully";
                 return RedirectToAction("Index");
             }
@@ -94,7 +95,7 @@ namespace PetProject.Controllers
                 return NotFound();
             }
 
-            Category? categoryToDelete = _context.Categories.Find(id);
+            Category? categoryToDelete = _categoryRepository.Get(c => c.Id == id);
             if (categoryToDelete is null)
             {
                 return NotFound();
@@ -106,14 +107,14 @@ namespace PetProject.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePost(int? id)
         {
-            Category categoryToDelete = _context.Categories.Find(id);
+            Category categoryToDelete = _categoryRepository.Get(c => c.Id == id);
             if (categoryToDelete is null)
             {
                 return NotFound();
             }
 
-            _context.Categories.Remove(categoryToDelete);
-            _context.SaveChanges();
+            _categoryRepository.Remove(categoryToDelete);
+            _categoryRepository.Save();
             TempData["success"] = "Category deleted successfully";
             return RedirectToAction("Index");
         }

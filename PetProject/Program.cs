@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using PetProject.DataAccess.Data;
+using PetProject.DataAccess.Repository;
+using PetProject.DataAccess.Repository.IRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
