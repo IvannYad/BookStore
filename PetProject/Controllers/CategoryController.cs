@@ -8,16 +8,16 @@ namespace PetProject.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CategoryController(ICategoryRepository repository)
+        public CategoryController(IUnitOfWork unitOfWork)
         {
-            _categoryRepository = repository;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-            List<Category> categoryList = _categoryRepository.GetAll().OrderBy(c => c.DisplayOrder).ToList();
+            List<Category> categoryList = _unitOfWork.Category.GetAll().OrderBy(c => c.DisplayOrder).ToList();
             return View(categoryList);
         }
 
@@ -39,8 +39,8 @@ namespace PetProject.Controllers
             }
             if (ModelState.IsValid)
             {
-                _categoryRepository.Add(category);
-                _categoryRepository.Save();
+                _unitOfWork.Category.Add(category);
+                _unitOfWork.Save();
                 TempData["success"] = "Category created successfully";
                 return RedirectToAction("Index");
             }
@@ -55,7 +55,7 @@ namespace PetProject.Controllers
                 return NotFound();
             }
 
-            Category? categoryToEdit = _categoryRepository.Get(c => c.Id == id);
+            Category? categoryToEdit = _unitOfWork.Category.Get(c => c.Id == id);
             if (categoryToEdit is null)
             {
                 return NotFound();
@@ -79,8 +79,8 @@ namespace PetProject.Controllers
 
             if (ModelState.IsValid)
             {
-                _categoryRepository.Update(category);
-                _categoryRepository.Save();
+                _unitOfWork.Category.Update(category);
+                _unitOfWork.Save();
                 TempData["success"] = "Category updates successfully";
                 return RedirectToAction("Index");
             }
@@ -95,7 +95,7 @@ namespace PetProject.Controllers
                 return NotFound();
             }
 
-            Category? categoryToDelete = _categoryRepository.Get(c => c.Id == id);
+            Category? categoryToDelete = _unitOfWork.Category.Get(c => c.Id == id);
             if (categoryToDelete is null)
             {
                 return NotFound();
@@ -107,14 +107,14 @@ namespace PetProject.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePost(int? id)
         {
-            Category categoryToDelete = _categoryRepository.Get(c => c.Id == id);
+            Category categoryToDelete = _unitOfWork.Category.Get(c => c.Id == id);
             if (categoryToDelete is null)
             {
                 return NotFound();
             }
 
-            _categoryRepository.Remove(categoryToDelete);
-            _categoryRepository.Save();
+            _unitOfWork.Category.Remove(categoryToDelete);
+            _unitOfWork.Save();
             TempData["success"] = "Category deleted successfully";
             return RedirectToAction("Index");
         }

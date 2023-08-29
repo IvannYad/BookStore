@@ -1,5 +1,4 @@
-﻿using PetProject.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace PetProject.DataAccess.Repository.IRepository
 {
-    public interface ICategoryRepository : IRepository.IRepository<Category>
+    public interface IUnitOfWork
     {
-        void Update(Category category);
+        ICategoryRepository Category { get; }
+
+        void Save();
     }
 }
