@@ -4,8 +4,9 @@ using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
 using System.Text.RegularExpressions;
 
-namespace PetProject.Controllers
+namespace PetProject.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -25,13 +26,13 @@ namespace PetProject.Controllers
         {
             return View();
         }
-        
+
         [HttpPost]
         public IActionResult Create(Category category)
         {
             if (category.Name is not null && !Regex.IsMatch(category.Name, @"^[a-zA-Z]+$"))
             {
-                ModelState.AddModelError("Name","'Category Name' must only consists of latin letters");
+                ModelState.AddModelError("Name", "'Category Name' must only consists of latin letters");
             }
             if (category.Name is not null && !char.IsUpper(category.Name[0]))
             {
