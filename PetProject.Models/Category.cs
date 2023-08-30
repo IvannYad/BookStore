@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PetProject.Models
 {
@@ -16,5 +17,8 @@ namespace PetProject.Models
         [DisplayName("Display Order")]
         [Range(1,100)]
         public int DisplayOrder { get; set; }
+
+        [ForeignKey("CategoryId")]
+        public List<Product> Products { get; set; }
     }
 }

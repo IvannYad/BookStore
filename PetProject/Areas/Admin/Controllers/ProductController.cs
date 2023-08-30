@@ -3,9 +3,9 @@ using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
 using System.Text.RegularExpressions;
 
-namespace PetProject.Areas.Customer.Controllers
+namespace PetProject.Areas.Admin.Controllers
 {
-    [Area("Customer")]
+    [Area("Admin")]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
