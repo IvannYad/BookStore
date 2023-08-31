@@ -48,5 +48,8 @@ namespace PetProject.Models
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
         public Category Category { get; set; }
+
+        [Required]
+        public string ImageUrl { get; set; }
     }
 }

@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\PetProject",
+    "\\PetProject\\Views"
   ],
+  "SelectedNode": "\\PetProject\\PetProject.sln",
   "PreviewInSolutionExplorer": false
 }
