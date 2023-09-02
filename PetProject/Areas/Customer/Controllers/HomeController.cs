@@ -23,6 +23,18 @@ namespace PetProject.Areas.Customer.Controllers
             return View(productList);
         }
 
+        public IActionResult Details(int? id)
+        {
+            if (id is null)
+                return NotFound();
+            
+            Product product = _unitOfWork.Product.Get(p => p.Id == id, includeProperties: "Category");
+            if (product is null)
+                return NotFound();
+            
+            return View(product);
+        }
+
         public IActionResult Privacy()
         {
             return View();
