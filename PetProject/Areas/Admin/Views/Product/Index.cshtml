@@ -18,60 +18,21 @@
                 </a>
             </div>
         </div>
-        <table class="table table-bordered table-striped">
+        <table id="tblData" class="table table-bordered table-striped" width="100%">
             <thead>
                 <tr>
-                    <th>
-                        Book Title
-                    </th>
-                    <th>
-                        ISBN
-                    </th>
-                    
-                    <th>
-                        Price
-                    </th>
-                    <th>
-                        Author
-                    </th>
-                    <th>
-                        Category
-                    </th>
+                    <th>Book Title</th>
+                    <th>ISBN</th>
+                    <th>Price</th>
+                    <th>Author</th>
+                    <th>Category</th>
                     <th></th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>
-                            @item.Title
-                        </td>
-                        <td>
-                            @item.ISBN
-                        </td>
-                        <td>
-                            @item.ListPrice
-                        </td>
-                        <td>
-                            @item.Author
-                        </td>
-                        <td>
-                            @item.Category.Name
-                        </td>
-                        <td>
-                            <div class="w-75 btn-group" role="group">
-                                <a asp-controller="Product" asp-action="Upsert" asp-route-id="@item.Id" class="btn btn-primary mx-2">
-                                    <i class="bi bi-pencil-square"></i> Edit
-                                </a>
-                                <a asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger mx-2">
-                                    <i class="bi bi-trash"></i> Delete
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
         </table>
     </div>
 </div>
+
+@section Scripts{
+    <script src="~/js/product.js"></script> @* JS for rendering DataTable of Products *@
+}

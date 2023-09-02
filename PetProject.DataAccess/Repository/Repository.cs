@@ -31,6 +31,8 @@ namespace PetProject.DataAccess.Repository
 
             return query.ToList();
         }
+
+        // Method for retrieving single entity.
         public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             IQueryable<T> query = _dbSet;

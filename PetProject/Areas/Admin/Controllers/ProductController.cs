@@ -11,6 +11,7 @@ namespace PetProject.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        // Field for saving or deleting file(e.g. image) in project folder.
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
@@ -19,19 +20,12 @@ namespace PetProject.Areas.Admin.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
+        // Method for displaying list of Products.
         public IActionResult Index()
         {
-            List<Product> productList = _unitOfWork.Product.GetAll(includeProperties:"Category").OrderBy(p => p.Title).ToList();
-            
-            return View(productList);
+            return View();
         }
 
-        //public IActionResult Details()
-        //{
-
-        //}
-
-        // Combined Create and Update.
         public IActionResult Upsert(int? id)
         {
             ProductVM productVM = new()
@@ -53,6 +47,8 @@ namespace PetProject.Areas.Admin.Controllers
                 return View(productVM);
             }
         }
+
+        // Method executes on clicking create(submit) of update(submit) button on Create or Edit web-page.
         [HttpPost]
         public IActionResult Upsert(ProductVM productVM, IFormFile? file)
         {
@@ -140,6 +136,7 @@ namespace PetProject.Areas.Admin.Controllers
 
             return View(productToDeleteVM);
         }
+        // Method executes on clicking Delete(submit) button on Delete web-page.
         [HttpPost]
         [ActionName("Delete")]
         public IActionResult DeletePost(ProductVM productVM)
@@ -162,5 +159,19 @@ namespace PetProject.Areas.Admin.Controllers
         
             return View(productVM);
         }
+
+        
+        #region API CALLS
+
+        // Method for retrieving all entities from db, and returning JSON file with data entites, that is 
+        // dicplayed in DataTable on Index page.
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            List<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category").OrderBy(p => p.Title).ToList();
+            return Json(new { data = productList});
+        }
+        
+        #endregion
     }
 }
