@@ -30,7 +30,8 @@
                             </div>
                         </div>
                         <div>
-                            <a asp-area="Customer" asp-controller="Home" asp-action="Details" class="btn btn-primary bg-gradient border-0 form-control">
+                            @* asp-route-[name of peremeter in corresponding action method] is used to pass parameters to corresponding action method*@
+                            <a asp-area="Customer" asp-controller="Home" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary bg-gradient border-0 form-control">
                                 Details
                             </a>
                         </div>
