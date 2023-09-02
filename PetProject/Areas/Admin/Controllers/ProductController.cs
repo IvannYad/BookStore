@@ -71,7 +71,7 @@ namespace PetProject.Areas.Admin.Controllers
 
                     if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
                     {
-                        // Delete old image.
+                        // Path to image to be deleted.
                         var oldImagePath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.Trim('\\'));
 
                         // Delete image if exists.
@@ -112,30 +112,6 @@ namespace PetProject.Areas.Admin.Controllers
             }
         }
 
-        public IActionResult Delete(int? id)
-        {
-            if (id is null or 0)
-            {
-                return NotFound();
-            }
-
-            ProductVM productToDeleteVM = new()
-            {
-                CategoryList = _unitOfWork.Category.GetAll().Select(c => new SelectListItem
-                {
-                    Text = c.Name,
-                    Value = c.Id.ToString()
-                }),
-                Product = _unitOfWork.Product.Get(p => p.Id == id)
-            };
-
-            if (productToDeleteVM.Product is null)
-            {
-                return NotFound();
-            }
-
-            return View(productToDeleteVM);
-        }
         // Method executes on clicking Delete(submit) button on Delete web-page.
         [HttpPost]
         [ActionName("Delete")]
@@ -171,7 +147,31 @@ namespace PetProject.Areas.Admin.Controllers
             List<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category").OrderBy(p => p.Title).ToList();
             return Json(new { data = productList});
         }
-        
+
+        [HttpDelete]
+        public IActionResult Delete(int? id)
+        {
+            var productToDelete = _unitOfWork.Product.Get(p => p.Id == id);
+            if (productToDelete is null)
+            {
+                return Json(new { success = false, message = "Error while deleting"});
+            }
+
+            // Path to image to be deleted.
+            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, productToDelete.ImageUrl.Trim('\\'));
+
+            // Delete image if exists.
+            if (System.IO.File.Exists(oldImagePath))
+            {
+                System.IO.File.Delete(oldImagePath);
+            }
+
+            _unitOfWork.Product.Remove(productToDelete);
+            _unitOfWork.Save();
+
+            return Json(new { success = true, message = "Deleting successfull" });
+        }
+
         #endregion
     }
 }
