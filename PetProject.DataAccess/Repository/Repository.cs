@@ -12,23 +12,37 @@ namespace PetProject.DataAccess.Repository
     public class Repository<T> : IRepository.IRepository<T>
         where T : class
     {
-        private ApplicationDbContext _context;
         private DbSet<T> _dbSet;
 
         public Repository(ApplicationDbContext context)
         {
-            _context = context;
-            _dbSet = _context.Set<T>();
+            _dbSet = context.Set<T>();
         }
-        public IEnumerable<T> GetAll()
+        public IEnumerable<T> GetAll(string? includeProperties = null)
         {
             IQueryable<T> query = _dbSet;
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+
             return query.ToList();
         }
-        public T Get(Expression<Func<T, bool>> filter)
+        public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             IQueryable<T> query = _dbSet;
             query = query.Where(filter);
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+
             return query.FirstOrDefault();
         }
 

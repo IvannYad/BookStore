@@ -21,7 +21,7 @@ namespace PetProject.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            List<Product> productList = _unitOfWork.Product.GetAll().OrderBy(p => p.Title).ToList();
+            List<Product> productList = _unitOfWork.Product.GetAll(includeProperties:"Category").OrderBy(p => p.Title).ToList();
             
             return View(productList);
         }
@@ -150,7 +150,7 @@ namespace PetProject.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
-        // Mathod for displaying page when some operation is unnsuccessfull.
+        // Method for displaying page when some operation is unnsuccessfull.
         public IActionResult ShowPageOnUnsuccessfullOperation(ProductVM productVM)
         {
             TempData["error"] = "Error";
