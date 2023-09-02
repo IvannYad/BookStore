@@ -1,7 +1,6 @@
 C:\Users\yad7d\Desktop\IT\Course_ASP.NET_MVC\PetProject.Models\bin\Debug\net7.0\PetProject.Models.deps.json
 C:\Users\yad7d\Desktop\IT\Course_ASP.NET_MVC\PetProject.Models\bin\Debug\net7.0\PetProject.Models.dll
 C:\Users\yad7d\Desktop\IT\Course_ASP.NET_MVC\PetProject.Models\bin\Debug\net7.0\PetProject.Models.pdb
-C:\Users\yad7d\Desktop\IT\Course_ASP.NET_MVC\PetProject.Models\obj\Debug\net7.0\PetProject.Models.csproj.AssemblyReference.cache
 C:\Users\yad7d\Desktop\IT\Course_ASP.NET_MVC\PetProject.Models\obj\Debug\net7.0\PetProject.Models.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\yad7d\Desktop\IT\Course_ASP.NET_MVC\PetProject.Models\obj\Debug\net7.0\PetProject.Models.AssemblyInfoInputs.cache
 C:\Users\yad7d\Desktop\IT\Course_ASP.NET_MVC\PetProject.Models\obj\Debug\net7.0\PetProject.Models.AssemblyInfo.cs
@@ -10,3 +9,4 @@ C:\Users\yad7d\Desktop\IT\Course_ASP.NET_MVC\PetProject.Models\obj\Debug\net7.0\
 C:\Users\yad7d\Desktop\IT\Course_ASP.NET_MVC\PetProject.Models\obj\Debug\net7.0\refint\PetProject.Models.dll
 C:\Users\yad7d\Desktop\IT\Course_ASP.NET_MVC\PetProject.Models\obj\Debug\net7.0\PetProject.Models.pdb
 C:\Users\yad7d\Desktop\IT\Course_ASP.NET_MVC\PetProject.Models\obj\Debug\net7.0\ref\PetProject.Models.dll
+C:\Users\yad7d\Desktop\IT\Course_ASP.NET_MVC\PetProject.Models\obj\Debug\net7.0\PetProject.Models.csproj.AssemblyReference.cache

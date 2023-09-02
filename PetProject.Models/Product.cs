@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -47,9 +48,11 @@ namespace PetProject.Models
 
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
+        [ValidateNever]
         public Category Category { get; set; }
 
         [Required]
+        [ValidateNever]
         public string ImageUrl { get; set; }
     }
 }
