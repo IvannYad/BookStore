@@ -3,6 +3,8 @@ using PetProject.DataAccess.Data;
 using PetProject.DataAccess.Repository;
 using PetProject.DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using PetProject.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +19,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // .AddEntityFrameworkStores<ApplicationDbContext>() binds identity tables to entity framework,
 // that is all tables needed for identity will be managed with help of specified context.
-builder.Services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
-
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
