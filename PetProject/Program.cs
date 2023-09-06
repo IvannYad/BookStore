@@ -19,7 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // .AddEntityFrameworkStores<ApplicationDbContext>() binds identity tables to entity framework,
 // that is all tables needed for identity will be managed with help of specified context.
-builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 var app = builder.Build();
 
