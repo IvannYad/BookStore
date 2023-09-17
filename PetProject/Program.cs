@@ -5,6 +5,8 @@ using PetProject.DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using PetProject.Utility;
+using Microsoft.Extensions.Options;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // .AddEntityFrameworkStores<ApplicationDbContext>() binds identity tables to entity framework,
 // that is all tables needed for identity will be managed with help of specified context.
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+// Configuration of default routes for some Identity actions.
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = $"/Identity/Account/Login";
+    options.LogoutPath = $"/Identity/Account/Logout";
+    options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+});
+
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 var app = builder.Build();
 

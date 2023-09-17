@@ -1,13 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
 using PetProject.Models.ViewModels;
+using PetProject.Utility;
 using System.Text.RegularExpressions;
 
 namespace PetProject.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    // Make sure that only user with role admin can access all action methods of controller.
+    [Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
