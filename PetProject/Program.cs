@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using PetProject.Utility;
 using Microsoft.Extensions.Options;
 using System.Configuration;
+using PetProject.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // .AddEntityFrameworkStores<ApplicationDbContext>() binds identity tables to entity framework,
 // that is all tables needed for identity will be managed with help of specified context.
-builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 // Configuration of default routes for some Identity actions.
 builder.Services.ConfigureApplicationCookie(options =>
