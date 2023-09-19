@@ -86,7 +86,7 @@ namespace PetProject.Areas.Admin.Controllers
             {
                 _unitOfWork.Category.Update(category);
                 _unitOfWork.Save();
-                TempData["success"] = "Category updates successfully";
+                TempData["success"] = "Category updated successfully";
                 return RedirectToAction("Index");
             }
 

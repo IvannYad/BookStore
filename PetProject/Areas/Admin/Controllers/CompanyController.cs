@@ -89,7 +89,7 @@ namespace PetProject.Areas.Admin.Controllers
             {
                 _unitOfWork.Company.Update(company);
                 _unitOfWork.Save();
-                TempData["success"] = "Company updates successfully";
+                TempData["success"] = "Company updated successfully";
                 return RedirectToAction("Index");
             }
 
