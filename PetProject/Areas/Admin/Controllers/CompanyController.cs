@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
@@ -95,36 +96,31 @@ namespace PetProject.Areas.Admin.Controllers
             return View();
         }
 
+        #region API CALLS
+
+        // Method for retrieving all entities from db, and returning JSON file with data entites, that is 
+        // displayed in DataTable on Index page.
         [HttpGet]
+        public IActionResult GetAll()
+        {
+            List<Company> companyList = _unitOfWork.Company.GetAll().OrderBy(p => p.Name).ToList();
+            return Json(new { data = companyList });
+        }
+
+        [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            if (id is null or 0)
-            {
-                return NotFound();
-            }
-
-            Company? companyToDelete = _unitOfWork.Company.Get(c => c.Id == id);
+            var companyToDelete = _unitOfWork.Company.Get(p => p.Id == id);
             if (companyToDelete is null)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Error while deleting" });
             }
-
-            return View(companyToDelete);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeletePost(int? id)
-        {
-            Company companyToDelete = _unitOfWork.Company.Get(c => c.Id == id);
-            if (companyToDelete is null)
-            {
-                return NotFound();
-            }
-
             _unitOfWork.Company.Remove(companyToDelete);
             _unitOfWork.Save();
-            TempData["success"] = "Company deleted successfully";
-            return RedirectToAction("Index");
+
+            return Json(new { success = true, message = "Deleting successfull" });
         }
+
+        #endregion
     }
 }

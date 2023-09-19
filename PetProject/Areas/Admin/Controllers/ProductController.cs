@@ -116,17 +116,6 @@ namespace PetProject.Areas.Admin.Controllers
             }
         }
 
-        // Method executes on clicking Delete(submit) button on Delete web-page.
-        [HttpPost]
-        [ActionName("Delete")]
-        public IActionResult DeletePost(ProductVM productVM)
-        {
-            _unitOfWork.Product.Remove(productVM.Product);
-            _unitOfWork.Save();
-            TempData["success"] = "Book deleted successfully";
-            return RedirectToAction("Index");
-        }
-
         // Method for displaying page when some operation is unnsuccessfull.
         public IActionResult ShowPageOnUnsuccessfullOperation(ProductVM productVM)
         {
@@ -144,7 +133,7 @@ namespace PetProject.Areas.Admin.Controllers
         #region API CALLS
 
         // Method for retrieving all entities from db, and returning JSON file with data entites, that is 
-        // dicplayed in DataTable on Index page.
+        // displayed in DataTable on Index page.
         [HttpGet]
         public IActionResult GetAll()
         {
