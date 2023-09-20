@@ -52,7 +52,21 @@ namespace PetProject.Areas.Customer.Controllers
             shoppingCart.ApplicationUserId = userId;
             shoppingCart.Id = 0;
 
-            _unitOfWork.ShoppingCart.Add(shoppingCart);
+            var cartFromDb = _unitOfWork.ShoppingCart.Get(c => c.ApplicationUserId == userId && c.ProductId == shoppingCart.ProductId);
+
+            
+            if (cartFromDb is not null)
+            {
+                // If we already have order of given user with given product, update order, rather than create new.
+                cartFromDb.Count += shoppingCart.Count;
+                _unitOfWork.ShoppingCart.Update(cartFromDb);
+            }
+            else
+            {
+                // Add new shopping cart record.
+                _unitOfWork.ShoppingCart.Add(shoppingCart);
+            }
+
             _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
