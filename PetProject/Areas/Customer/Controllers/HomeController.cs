@@ -31,8 +31,9 @@ namespace PetProject.Areas.Customer.Controllers
             Product product = _unitOfWork.Product.Get(p => p.Id == id, includeProperties: "Category");
             if (product is null)
                 return NotFound();
-            
-            return View(product);
+
+            ShoppingCart shoppingCart = new() { Product = product, Count = 1, ProductId = product.Id };
+            return View(shoppingCart);
         }
 
         public IActionResult Privacy()
