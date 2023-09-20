@@ -22,10 +22,10 @@ namespace PetProject.Models
         [DisplayName("Company Address")]
         public string StreetAddress { get; set; }
         public string City { get; set; }
-        public string State { get; set; }
+        public string? State { get; set; }
 
         [DisplayName("Postal Code")]
-        public string PostalCode { get; set; }
+        public string? PostalCode { get; set; }
 
         [DisplayName("Phone Number")]
         public string PhoneNumber { get; set; }
