@@ -68,6 +68,8 @@ namespace PetProject.Areas.Customer.Controllers
             }
 
             _unitOfWork.Save();
+            TempData["success"] = "Cart updated successfully";
+
             return RedirectToAction(nameof(Index));
         }
 
