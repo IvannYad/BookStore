@@ -37,6 +37,46 @@ namespace PetProject.Areas.Customer.Controllers
             return View(ShoppingCartVM);
         }
 
+        public IActionResult Plus(int cartId)
+        {
+            var cartFromDb = _unitOfWork.ShoppingCart.Get(c => c.Id == cartId);
+            cartFromDb.Count += 1;
+            _unitOfWork.ShoppingCart.Update(cartFromDb);
+            _unitOfWork.Save();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Minus(int cartId)
+        {
+            var cartFromDb = _unitOfWork.ShoppingCart.Get(c => c.Id == cartId);
+            if (cartFromDb.Count <= 1)
+            {
+                _unitOfWork.ShoppingCart.Remove(cartFromDb);
+            }
+            else
+            {
+                cartFromDb.Count -= 1;
+                _unitOfWork.ShoppingCart.Update(cartFromDb);
+            }
+            
+            _unitOfWork.Save();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Remove(int cartId)
+        {
+            var cartFromDb = _unitOfWork.ShoppingCart.Get(c => c.Id == cartId);
+            if (cartFromDb is null)
+                return NotFound();
+
+            _unitOfWork.ShoppingCart.Remove(cartFromDb);
+            _unitOfWork.Save();
+
+            return RedirectToAction(nameof(Index));
+        }
+
         private double GetPriceBasedOnQuantity(ShoppingCart shoppingCart)
         {
             return shoppingCart.Count switch
