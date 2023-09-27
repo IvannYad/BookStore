@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -24,14 +25,17 @@ namespace PetProject.Models
         public string? PaymentIntentId { get; set; }
 
         [Required]
+        [DisplayName("Phone")]
         public string PhoneNumber { get; set; }
         [Required]
+        [DisplayName("Street Address")]
         public string StreetAddress { get; set; }
         [Required]
         public string City { get; set; }
         [Required]
         public string State { get; set; }
         [Required]
+        [DisplayName("Postal Code")]
         public string PostalCode { get; set; }
         [Required]
         public string Name { get; set; }
