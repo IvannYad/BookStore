@@ -10,6 +10,6 @@ namespace PetProject.Models.ViewModels
     public class ShoppingCartVM
     {
         public List<ShoppingCart> ShoppingCartList { get; set; }
-        public double OrderTotal { get; set; }
+        public OrderHeader OrderHeader { get; set; }
     }
 }

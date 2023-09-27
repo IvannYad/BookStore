@@ -23,15 +23,16 @@ namespace PetProject.Areas.Customer.Controllers
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-            ShoppingCartVM = new() 
-            { 
-                ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(c => c.ApplicationUserId == userId, includeProperties: "Product").ToList()
+            ShoppingCartVM = new()
+            {
+                ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(c => c.ApplicationUserId == userId, includeProperties: "Product").ToList(),
+                OrderHeader = new OrderHeader()
             };
 
             foreach (var shoppingCartItem in ShoppingCartVM.ShoppingCartList)
             {
                 shoppingCartItem.Price = GetPriceBasedOnQuantity(shoppingCartItem);
-                ShoppingCartVM.OrderTotal += shoppingCartItem.Count * shoppingCartItem.Price;
+                ShoppingCartVM.OrderHeader.OrderTotal += shoppingCartItem.Count * shoppingCartItem.Price;
             }
 
             return View(ShoppingCartVM);
