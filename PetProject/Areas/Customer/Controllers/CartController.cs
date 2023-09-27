@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
 using PetProject.Models.ViewModels;
+using PetProject.Utility;
 using System.Security.Claims;
 
 namespace PetProject.Areas.Customer.Controllers
@@ -12,6 +13,7 @@ namespace PetProject.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
 
         public CartController(IUnitOfWork unitOfWork)
@@ -62,6 +64,59 @@ namespace PetProject.Areas.Customer.Controllers
             {
                 shoppingCartItem.Price = GetPriceBasedOnQuantity(shoppingCartItem);
                 ShoppingCartVM.OrderHeader.OrderTotal += shoppingCartItem.Count * shoppingCartItem.Price;
+            }
+
+            return View(ShoppingCartVM);
+        }
+
+        [HttpPost]
+        [ActionName("Summary")]
+        public IActionResult SummaryPOST()
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCart
+                                                .GetAll(c => c.ApplicationUserId == userId, includeProperties: "Product")
+                                                .ToList();
+
+            ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
+            ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
+            ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
+            
+            foreach (var shoppingCartItem in ShoppingCartVM.ShoppingCartList)
+            {
+                shoppingCartItem.Price = GetPriceBasedOnQuantity(shoppingCartItem);
+                ShoppingCartVM.OrderHeader.OrderTotal += shoppingCartItem.Count * shoppingCartItem.Price;
+            }
+
+            if (ShoppingCartVM.OrderHeader.ApplicationUser.CompanyId.GetValueOrDefault() == 0)
+            {
+                // Regular user.
+                ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
+                ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
+            }
+            else
+            {
+                // Company user.
+                ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusApproved;
+                ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusDelayedPayment;
+            }
+
+            _unitOfWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
+            _unitOfWork.Save();
+
+            foreach (var cart in ShoppingCartVM.ShoppingCartList)
+            {
+                OrderDetail orderDetail = new()
+                {
+                    ProductId = cart.ProductId,
+                    OrderHeaderId = ShoppingCartVM.OrderHeader.Id,
+                    Price = cart.Price,
+                    Count = cart.Count
+                };
+
+                _unitOfWork.OrderDetail.Add(orderDetail);
+                _unitOfWork.Save();
             }
 
             return View(ShoppingCartVM);
