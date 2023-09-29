@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace PetProject.Utility
 {
-    // Class for storing different constants.
-    public class StaticDetails
+    public class StripeSettings
     {
+        public string SecretKey { get; set; }
+        public string PublishableKey { get; set; }
     }
 }
