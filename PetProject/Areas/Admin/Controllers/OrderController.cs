@@ -2,6 +2,7 @@
 using PetProject.DataAccess.Repository;
 using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
+using PetProject.Models.ViewModels;
 using PetProject.Utility;
 using System.Diagnostics;
 
@@ -20,6 +21,16 @@ namespace PetProject.Areas.Admin.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public IActionResult Details(int orderId)
+        {
+            OrderVM orderVM = new OrderVM()
+            {
+                OrderHeader = _unitOfWork.OrderHeader.Get(h => h.Id == orderId, includeProperties: "ApplicationUser"),
+                OrderDetails = _unitOfWork.OrderDetail.GetAll(d => d.OrderHeaderId == orderId, includeProperties: "Product")
+            };
+            return View(orderVM);
         }
 
         #region API CALLS
