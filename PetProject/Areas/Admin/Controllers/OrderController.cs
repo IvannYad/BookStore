@@ -1,14 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PetProject.DataAccess.Repository;
+using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
 
 namespace PetProject.Areas.Admin.Controllers
 {
+    [Area("admin")]
     public class OrderController : Controller
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public OrderController(UnitOfWork unitOfWork)
+        public OrderController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
