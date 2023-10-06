@@ -2,6 +2,8 @@
 using PetProject.DataAccess.Repository;
 using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
+using PetProject.Utility;
+using System.Diagnostics;
 
 namespace PetProject.Areas.Admin.Controllers
 {
@@ -25,9 +27,28 @@ namespace PetProject.Areas.Admin.Controllers
         // Method for retrieving all entities from db, and returning JSON file with data entites, that is 
         // displayed in DataTable on Index page.
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAll(string status)
         {
-            List<OrderHeader> orderHeaders = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser").ToList();
+            IEnumerable<OrderHeader> orderHeaders = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser");
+
+            switch (status)
+            {
+                case "pending":
+                    orderHeaders = orderHeaders.Where(o => o.OrderStatus == SD.StatusPending);
+                    break;
+                case "inprocess":
+                    orderHeaders = orderHeaders.Where(o => o.OrderStatus == SD.StatusProcessing);
+                    break;
+                case "completed":
+                    orderHeaders = orderHeaders.Where(o => o.OrderStatus == SD.StatusShipped);
+                    break;
+                case "approved":
+                    orderHeaders = orderHeaders.Where(o => o.OrderStatus == SD.StatusApproved);
+                    break;
+                case "all":
+                    break;
+            }
+
             return Json(new { data = orderHeaders });
         }
 
