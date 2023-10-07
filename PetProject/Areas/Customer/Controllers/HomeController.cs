@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
+using PetProject.Utility;
 using System.Diagnostics;
 using System.Security.Claims;
 
@@ -39,15 +41,15 @@ namespace PetProject.Areas.Customer.Controllers
         }
 
         [HttpPost]
-        // [Autorize] attribure make it forbidden for unautorized(not-logined) users to add items to cart.
+        // [Autorize] attribure make it forbidden for unauthenticated(not-logined) users to add items to cart.
         [Authorize]
         public IActionResult Details(ShoppingCart shoppingCart)
         {
             if (shoppingCart is null)
                 return NotFound();
 
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
             // Getting Id of user, associated with current execution action.
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             shoppingCart.ApplicationUserId = userId;
             shoppingCart.Id = 0;
@@ -68,6 +70,11 @@ namespace PetProject.Areas.Customer.Controllers
             }
 
             _unitOfWork.Save();
+            
+            // Setting number of products is cart of user current session.
+            HttpContext.Session.SetInt32(SD.SessionCart,
+                _unitOfWork.ShoppingCart.GetAll(c => c.ApplicationUserId == userId).Count());
+
             TempData["success"] = "Cart updated successfully";
 
             return RedirectToAction(nameof(Index));

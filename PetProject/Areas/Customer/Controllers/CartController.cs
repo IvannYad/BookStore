@@ -208,15 +208,22 @@ namespace PetProject.Areas.Customer.Controllers
             if (cartFromDb.Count <= 1)
             {
                 _unitOfWork.ShoppingCart.Remove(cartFromDb);
+                _unitOfWork.Save();
+
+                // Getting Id of user, associated with current execution action.
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                // Setting number of products is cart of user current session.
+                HttpContext.Session.SetInt32(SD.SessionCart,
+                _unitOfWork.ShoppingCart.GetAll(c => c.ApplicationUserId == userId).Count());
             }
             else
             {
                 cartFromDb.Count -= 1;
                 _unitOfWork.ShoppingCart.Update(cartFromDb);
+                _unitOfWork.Save();
             }
             
-            _unitOfWork.Save();
-
             return RedirectToAction(nameof(Index));
         }
 
@@ -228,6 +235,13 @@ namespace PetProject.Areas.Customer.Controllers
 
             _unitOfWork.ShoppingCart.Remove(cartFromDb);
             _unitOfWork.Save();
+            
+            // Getting Id of user, associated with current execution action.
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            // Setting number of products is cart of user current session.
+            HttpContext.Session.SetInt32(SD.SessionCart,
+                _unitOfWork.ShoppingCart.GetAll(c => c.ApplicationUserId == userId).Count());
 
             return RedirectToAction(nameof(Index));
         }
