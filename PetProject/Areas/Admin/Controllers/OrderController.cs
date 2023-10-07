@@ -6,6 +6,7 @@ using PetProject.Models;
 using PetProject.Models.ViewModels;
 using PetProject.Utility;
 using Stripe;
+using Stripe.Checkout;
 using System.Diagnostics;
 using System.Security.Claims;
 
@@ -40,6 +41,75 @@ namespace PetProject.Areas.Admin.Controllers
             
             return View(OrderViewModel);
         }
+
+        [HttpPost]
+        [ActionName("Details")]
+        public IActionResult DetailsPayNow()
+        {
+            OrderViewModel.OrderHeader = _unitOfWork.OrderHeader
+                .Get(h => h.Id == OrderViewModel.OrderHeader.Id, includeProperties: "ApplicationUser");
+            OrderViewModel.OrderDetails = _unitOfWork.OrderDetail
+                .GetAll(d => d.OrderHeaderId == OrderViewModel.OrderHeader.Id, includeProperties: "Product");
+
+            string domain = "https://localhost:7176/";
+            var options = new SessionCreateOptions
+            {
+                SuccessUrl = domain + $"admin/order/PaymentConfirmation?orderHeaderId={OrderViewModel.OrderHeader.Id}",
+                CancelUrl = domain + $"admin/order/Details?orderId={OrderViewModel.OrderHeader.Id}",
+                LineItems = new List<SessionLineItemOptions>(),
+                Mode = "payment",
+            };
+
+            // Stripe logic.
+            foreach (var item in OrderViewModel.OrderDetails)
+            {
+                var sessionLineItem = new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions()
+                    {
+                        UnitAmount = (long)(item.Price * 100), // $20.50 => 2050
+                        Currency = "usd",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions()
+                        {
+                            Name = item.Product.Title
+                        }
+                    },
+                    Quantity = item.Count
+                };
+
+                options.LineItems.Add(sessionLineItem);
+            }
+
+
+            var service = new SessionService();
+            Session session = service.Create(options);
+            _unitOfWork.OrderHeader.UpdateStripePaymentId(OrderViewModel.OrderHeader.Id, session.Id, session.PaymentIntentId);
+            _unitOfWork.Save();
+
+            Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);
+        }
+
+        public IActionResult PaymentConfirmation(int orderHeaderId)
+        {
+            var orderHeader = _unitOfWork.OrderHeader.Get(h => h.Id == orderHeaderId);
+            if (orderHeader.PaymentStatus == SD.PaymentStatusDelayedPayment)
+            {
+                // Order placed bu a company.
+                var service = new SessionService();
+                Session session = service.Get(orderHeader.SessionId);
+
+                if (session.PaymentStatus.ToLower() == "paid")
+                {
+                    _unitOfWork.OrderHeader.UpdateStripePaymentId(orderHeaderId, session.Id, session.PaymentIntentId);
+                    _unitOfWork.OrderHeader.UpdateStatus(orderHeaderId, orderHeader.OrderStatus, SD.PaymentStatusApproved);
+                    _unitOfWork.Save();
+                }
+            }
+            
+            return View(orderHeaderId);
+        }
+
 
         [HttpPost]
         [Authorize(Roles =SD.Role_Admin + "," + SD.Role_Employee)]
