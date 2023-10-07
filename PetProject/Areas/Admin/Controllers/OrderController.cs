@@ -66,6 +66,39 @@ namespace PetProject.Areas.Admin.Controllers
             return RedirectToAction(nameof(Details), new { orderId = orderHeaderFromDB.Id });
         }
 
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult StartProcessing()
+        {
+            _unitOfWork.OrderHeader.UpdateStatus(OrderViewModel.OrderHeader.Id, SD.StatusProcessing);
+            _unitOfWork.Save();
+            TempData["success"] = "Order Deatails Updated Successfully";
+
+            return RedirectToAction(nameof(Details), new { orderId = OrderViewModel.OrderHeader.Id });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult ShipOrder()
+        {
+            var orderHeaderFromDB = _unitOfWork.OrderHeader.Get(h => h.Id == OrderViewModel.OrderHeader.Id);
+
+            orderHeaderFromDB.Carrier = OrderViewModel.OrderHeader.Carrier;
+            orderHeaderFromDB.TrackingNumber = OrderViewModel.OrderHeader.TrackingNumber;
+            orderHeaderFromDB.OrderStatus = SD.StatusShipped;
+            orderHeaderFromDB.ShippingDate = DateTime.Now;
+            if (orderHeaderFromDB.PaymentStatus == SD.PaymentStatusDelayedPayment)
+            {
+                orderHeaderFromDB.PaymentDueDate = DateTime.Now.AddDays(30);
+            }
+
+            _unitOfWork.OrderHeader.Update(orderHeaderFromDB);
+            _unitOfWork.Save();
+            TempData["success"] = "Order Shipped Successfully";
+
+            return RedirectToAction(nameof(Details), new { orderId = OrderViewModel.OrderHeader.Id });
+        }
+
         #region API CALLS
 
         // Method for retrieving all entities from db, and returning JSON file with data entites, that is 
