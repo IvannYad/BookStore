@@ -6,6 +6,7 @@ using PetProject.Models;
 using PetProject.Models.ViewModels;
 using PetProject.Utility;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace PetProject.Areas.Admin.Controllers
 {
@@ -71,7 +72,18 @@ namespace PetProject.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll(string status)
         {
-            IEnumerable<OrderHeader> orderHeaders = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser");
+            IEnumerable<OrderHeader> orderHeaders;
+
+            if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
+            {
+                orderHeaders = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser");
+            }
+            else
+            {
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                string userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                orderHeaders = _unitOfWork.OrderHeader.GetAll(h => h.ApplicationUserId == userId, includeProperties: "ApplicationUser");
+            }
 
             switch (status)
             {
