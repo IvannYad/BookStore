@@ -5,6 +5,7 @@ using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
 using PetProject.Models.ViewModels;
 using PetProject.Utility;
+using Stripe;
 using System.Diagnostics;
 using System.Security.Claims;
 
@@ -98,6 +99,36 @@ namespace PetProject.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Details), new { orderId = OrderViewModel.OrderHeader.Id });
         }
+
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult CancelOrder()
+        {
+            var orderHeaderFromDB = _unitOfWork.OrderHeader.Get(h => h.Id == OrderViewModel.OrderHeader.Id);
+            if (orderHeaderFromDB.PaymentStatus == SD.PaymentStatusApproved)
+            {
+                var options = new RefundCreateOptions
+                {
+                    Reason = RefundReasons.RequestedByCustomer,
+                    PaymentIntent = orderHeaderFromDB.PaymentIntentId
+                };
+
+                var service = new RefundService();
+                Refund refund = service.Create(options);
+
+                _unitOfWork.OrderHeader.UpdateStatus(orderHeaderFromDB.Id, SD.StatusCanceled, SD.StatusRefunded);
+            }
+            else
+            {
+                _unitOfWork.OrderHeader.UpdateStatus(orderHeaderFromDB.Id, SD.StatusCanceled, SD.StatusCanceled);
+            }
+            
+            _unitOfWork.Save();
+            TempData["success"] = "Order canceled Successfully";
+
+            return RedirectToAction(nameof(Details), new { orderId = OrderViewModel.OrderHeader.Id });
+        }
+
 
         #region API CALLS
 
