@@ -34,7 +34,7 @@
                                 <a class="nav-link" asp-area="Admin" asp-controller="Order" asp-action="Index" asp-route-status="all">Manage Order</a>
                             </li>
                         }
-                        @if (User.IsInRole(SD.Role_Admin))
+                        @if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -50,10 +50,17 @@
                                     <li class="nav-item">
                                         <a class="dropdown-item" asp-area="Admin" asp-controller="Company" asp-action="Index">Company</a>
                                     </li>
+                                    @if (User.IsInRole(SD.Role_Admin))
+                                    {
+                                        <li><hr class="dropdown-divider" /></li>
+                                        <li class="nav-item">
+                                            <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">Create user</a>
+                                        </li>
+                                    }
                                 </ul>
                             </li>
                         }
-                        
+
                         <li class="nav-item">
                             <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index">
                                 @await Component.InvokeAsync("ShoppingCart")
