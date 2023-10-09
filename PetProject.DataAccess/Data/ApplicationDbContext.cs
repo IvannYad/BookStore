@@ -121,6 +121,38 @@ namespace PetProject.DataAccess.Data
                     CategoryId = 3,
                     ImageUrl = ""
                 });
+
+            modelBuilder.Entity<Company>().HasData(
+                new Company
+                {
+                    Id = 1,
+                    Name = "Book`s Club",
+                    StreetAddress = "999 Main St",
+                    City = "Lviv",
+                    State = "Lviv",
+                    PhoneNumber = "0687777777",
+                    PostalCode = "79049"
+                },
+                new Company
+                {
+                    Id = 2,
+                    Name = "KnuharnyaYe",
+                    StreetAddress = "999 Main St",
+                    City = "Kyiv",
+                    State = "Kyiv",
+                    PhoneNumber = "0683377377",
+                    PostalCode = "79050"
+                },
+                new Company
+                {
+                    Id = 3,
+                    Name = "Ababahalamaha",
+                    StreetAddress = "999 Main St",
+                    City = "Kharkiv",
+                    State = "Kharkiv",
+                    PhoneNumber = "0687723750",
+                    PostalCode = "79051"
+                });
         }
     }
 }
