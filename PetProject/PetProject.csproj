@@ -23,6 +23,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.10" />
     <PackageReference Include="Stripe.net" Version="42.7.0" />
+    <PackageReference Include="System.DirectoryServices.AccountManagement" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>
