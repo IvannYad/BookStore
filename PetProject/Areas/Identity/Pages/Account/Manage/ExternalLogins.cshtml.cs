@@ -19,12 +19,12 @@ namespace PetProject.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IUserStore<IdentityUser> _userStore;
+        private readonly IUserStore<ApplicationUser> _userStore;
 
         public ExternalLoginsModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IUserStore<IdentityUser> userStore)
+            IUserStore<ApplicationUser> userStore)
         {
             _userManager = userManager;
             _signInManager = signInManager;
