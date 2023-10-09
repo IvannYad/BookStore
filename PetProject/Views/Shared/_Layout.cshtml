@@ -53,27 +53,12 @@
                                 </ul>
                             </li>
                         }
-                        @if (IHttpContextAccessor.HttpContext.Session.GetInt32(SD.SessionCart) is not null)
-                        {
-                            // If we have items in cart.
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index">
-                                    <i class="bi bi-cart2"></i> &nbsp;
-                                    (@IHttpContextAccessor.HttpContext.Session.GetInt32(SD.SessionCart))
-                                </a>
-                            </li>
-                        }
-                        else
-                        {
-                            // If cart is empty.
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index">
-                                    <i class="bi bi-cart2"></i> &nbsp;
-                                    (0)
-                                </a>
-                            </li>
-                        }
-
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                @await Component.InvokeAsync("ShoppingCart")
+                            </a>
+                        </li>
                     </ul>
                     <partial name="_LoginPartial"></partial>
                 </div>

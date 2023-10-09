@@ -5,11 +5,11 @@ using System.Security.Claims;
 
 namespace PetProject.ViewComponents
 {
-    public class ShopingCartViewComponent: ViewComponent
+    public class ShoppingCartViewComponent: ViewComponent
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public ShopingCartViewComponent(IUnitOfWork unitOfWork)
+        public ShoppingCartViewComponent(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
