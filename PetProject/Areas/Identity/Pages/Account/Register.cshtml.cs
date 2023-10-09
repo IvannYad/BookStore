@@ -136,7 +136,7 @@ namespace PetProject.Areas.Identity.Pages.Account
                 _roleManager.CreateAsync(new IdentityRole(SD.Role_Admin)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(SD.Role_Employee)).GetAwaiter().GetResult();
             }
-            
+
             Input = new InputModel()
             {
                 RoleList = _roleManager.Roles.Select(r => r.Name).Select(i => new SelectListItem
@@ -150,7 +150,7 @@ namespace PetProject.Areas.Identity.Pages.Account
                     Value = i.Id.ToString()
                 })
             };
-            
+
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
@@ -209,7 +209,15 @@ namespace PetProject.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        if (User.IsInRole(SD.Role_Admin))
+                        {
+                            TempData["success"] = "New User Created Successfully";
+                        }
+                        else
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                        }
+
                         return LocalRedirect(returnUrl);
                     }
                 }
@@ -218,7 +226,7 @@ namespace PetProject.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-            
+
             // If we got this far, something failed, redisplay form.
             Input = new InputModel()
             {
@@ -228,7 +236,7 @@ namespace PetProject.Areas.Identity.Pages.Account
                     Value = i
                 })
             };
-            
+
             return Page();
         }
 

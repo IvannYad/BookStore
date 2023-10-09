@@ -10,17 +10,25 @@
     <div class="card-header bg-secondary bg-gradient ml-0 py-4">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="py-2 text-white">Register</h2>
+                @if (User.IsInRole(SD.Role_Admin))
+                {
+                    <h2 class="py-2 text-white">Register - ADMIN PORTAL</h2>
+                }
+                else
+                {
+                    <h2 class="py-2 text-white">Register</h2>
+                }
+                
             </div>
         </div>
     </div>
     <div class="card-body p-4">
         <div class="row pt-3">
             <div class="col-md-12">
-                <form id="registerForm"  class="row" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <form id="registerForm" class="row" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                     <h3 class="border-bottom pb-3 mb-3 text-secondary text-center">Create a new account.</h3>
                     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                    
+
                     <div class="form-floating mb-3 col-md-12">
                         <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                         <label asp-for="Input.Email" class="ms-2 text-muted">Email</label>
@@ -50,50 +58,54 @@
                         <label asp-for="Input.ConfirmPassword" class="ms-2 text-muted">Confirm Password</label>
                         <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                     </div>
-                    
+
                     <div class="form-floating mb-3 col-md-6">
                         <input asp-for="Input.StreetAddress" class="form-control" placeholder="" />
                         <label asp-for="Input.StreetAddress" class="ms-2 text-muted">Street Address</label>
                         <span asp-validation-for="Input.StreetAddress" class="text-danger"></span>
                     </div>
-                    
+
                     <div class="form-floating mb-3 col-md-6">
                         <input asp-for="Input.City" class="form-control" placeholder="" />
                         <label asp-for="Input.City" class="ms-2 text-muted">City</label>
                         <span asp-validation-for="Input.City" class="text-danger"></span>
                     </div>
-                    
+
                     <div class="form-floating mb-3 col-md-6">
                         <input asp-for="Input.State" class="form-control" placeholder="" />
                         <label asp-for="Input.State" class="ms-2 text-muted">State</label>
                         <span asp-validation-for="Input.State" class="text-danger"></span>
                     </div>
-                    
+
                     <div class="form-floating mb-3 col-md-6">
                         <input asp-for="Input.PostalCode" class="form-control" placeholder="" />
                         <label asp-for="Input.PostalCode" class="ms-2 text-muted">Postal Code</label>
                         <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
                     </div>
-                    
-                    <div class="form-floating mb-3 col-md-6">
-                        <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
-                            <option disabled selected>-Select Role-</option>
-                        </select>
-                    </div>
-                    <div class="form-floating mb-3 col-md-6">
-                        <select asp-for="Input.CompanyId" asp-items="@Model.Input.CompanyList" class="form-select">
-                            <option disabled selected>-Select Company-</option>
-                        </select>
-                    </div>
+                    @if (User.IsInRole(SD.Role_Admin))
+                    {
+                        <div class="form-floating mb-3 col-md-6">
+                            <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
+                                <option disabled selected>-Select Role-</option>
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3 col-md-6">
+                            <select asp-for="Input.CompanyId" asp-items="@Model.Input.CompanyList" class="form-select">
+                                <option disabled selected>-Select Company-</option>
+                            </select>
+                        </div>
+                    }
+
                     <div class="col-12">
                         <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
                     </div>
                 </form>
             </div>
-            <div class="col-md-12">
+            @if (!User.IsInRole(SD.Role_Admin))
+            {
+                <div class="col-md-12 p-3 text-center">
                 <section>
                     <p class="d-flex divider-text pt-3">or</p>
-                    <h3>Use another service to register.</h3>
                     @{
                         if ((Model.ExternalLogins?.Count ?? 0) == 0)
                         {
@@ -113,7 +125,16 @@
                                     <p>
                                         @foreach (var provider in Model.ExternalLogins!)
                                         {
-                                            <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                            if (provider.DisplayName.ToLower() == "facebook")
+                                            {
+                                                <button type="submit" class="btn" style="background-color: #0866FF; color: white;" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                                                    <i class="bi bi-facebook"></i> @provider.DisplayName
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                            }
                                         }
                                     </p>
                                 </div>
@@ -122,6 +143,8 @@
                     }
                 </section>
             </div>
+            }
+            
         </div>
     </div>
 </div>
@@ -133,12 +156,12 @@
     <script>
         $(document).ready(function () {
             $('#Input_CompanyId').hide();
-            $('#Input_Role').change(function () { 
+            $('#Input_Role').change(function () {
                 var selection = $('#Input_Role Option:Selected').text();
-                if (selection == 'Company'){
+                if (selection == 'Company') {
                     $('#Input_CompanyId').show();
                 }
-                else{
+                else {
                     $('#Input_CompanyId').hide();
                 }
             })

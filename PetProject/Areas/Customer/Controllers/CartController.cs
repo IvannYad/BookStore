@@ -6,6 +6,7 @@ using PetProject.Models.ViewModels;
 using PetProject.Utility;
 using Stripe.Checkout;
 using System.Security.Claims;
+using System.DirectoryServices.AccountManagement;
 
 namespace PetProject.Areas.Customer.Controllers
 {
@@ -131,7 +132,7 @@ namespace PetProject.Areas.Customer.Controllers
                     SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
                     CancelUrl = domain + "customer/cart/Index",
                     LineItems = new List<SessionLineItemOptions>(),
-                    Mode = "payment",
+                    Mode = "payment"
                 };
 
                 foreach (var item in ShoppingCartVM.ShoppingCartList)
@@ -181,6 +182,8 @@ namespace PetProject.Areas.Customer.Controllers
                     _unitOfWork.OrderHeader.UpdateStatus(id, SD.StatusApproved, SD.PaymentStatusApproved);
                     _unitOfWork.Save();
                 }
+
+                HttpContext.Session.Clear();
             }
 
             // After order payment clear the shopping cart.
@@ -208,15 +211,22 @@ namespace PetProject.Areas.Customer.Controllers
             if (cartFromDb.Count <= 1)
             {
                 _unitOfWork.ShoppingCart.Remove(cartFromDb);
+                _unitOfWork.Save();
+
+                // Getting Id of user, associated with current execution action.
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                // Setting number of products is cart of user current session.
+                HttpContext.Session.SetInt32(SD.SessionCart,
+                _unitOfWork.ShoppingCart.GetAll(c => c.ApplicationUserId == userId).Count());
             }
             else
             {
                 cartFromDb.Count -= 1;
                 _unitOfWork.ShoppingCart.Update(cartFromDb);
+                _unitOfWork.Save();
             }
             
-            _unitOfWork.Save();
-
             return RedirectToAction(nameof(Index));
         }
 
@@ -228,6 +238,13 @@ namespace PetProject.Areas.Customer.Controllers
 
             _unitOfWork.ShoppingCart.Remove(cartFromDb);
             _unitOfWork.Save();
+            
+            // Getting Id of user, associated with current execution action.
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            // Setting number of products is cart of user current session.
+            HttpContext.Session.SetInt32(SD.SessionCart,
+                _unitOfWork.ShoppingCart.GetAll(c => c.ApplicationUserId == userId).Count());
 
             return RedirectToAction(nameof(Index));
         }

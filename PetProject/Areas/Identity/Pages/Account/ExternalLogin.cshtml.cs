@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using PetProject.Models;
+using PetProject.Utility;
 
 namespace PetProject.Areas.Identity.Pages.Account
 {
@@ -85,6 +86,13 @@ namespace PetProject.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+            [Required]
+            public string Name { get; set; }
+            public string? StreetAddress { get; set; }
+            public string? City { get; set; }
+            public string? State { get; set; }
+            public string? PostalCode { get; set; }
+            public string? PhoneNumber { get; set; }
         }
         
         public IActionResult OnGet() => RedirectToPage("./Login");
@@ -132,7 +140,8 @@ namespace PetProject.Areas.Identity.Pages.Account
                 {
                     Input = new InputModel
                     {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                        Name = info.Principal.FindFirstValue(ClaimTypes.Name)
                     };
                 }
                 return Page();
@@ -156,10 +165,17 @@ namespace PetProject.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.Name = Input.Name;
+                user.StreetAddress = Input.StreetAddress;
+                user.City = Input.City;
+                user.PostalCode = Input.PostalCode;
+                user.State = Input.State;
+                user.PhoneNumber = Input.PhoneNumber;
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, SD.Role_Customer);
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {

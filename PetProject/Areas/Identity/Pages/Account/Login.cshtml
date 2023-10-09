@@ -49,10 +49,9 @@
                     </form>
                 </section>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12 text-center p-3">
                 <section>
                     <p class="d-flex divider-text pt-3">or</p>
-                    <h3>Use another service to log in.</h3>
                     @{
                         if ((Model.ExternalLogins?.Count ?? 0) == 0)
                         {
@@ -72,7 +71,17 @@
                                     <p>
                                         @foreach (var provider in Model.ExternalLogins!)
                                         {
-                                            <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                            if (@provider.DisplayName.ToLower() == "facebook")
+                                            {
+                                                <button type="submit" class="btn" style="background-color: #0866FF; color: white;" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                                                    <i class="bi bi-facebook"></i>  @provider.DisplayName
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                            }
+
                                         }
                                     </p>
                                 </div>

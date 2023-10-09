@@ -10,7 +10,7 @@ namespace PetProject.Areas.Admin.Controllers
 {
     [Area("Admin")]
     // Make sure that only user with role admin can access all action methods of controller.
-    [Authorize(Roles = SD.Role_Admin)]
+    [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
     public class CompanyController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
