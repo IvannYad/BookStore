@@ -23,6 +23,15 @@ namespace PetProject.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            if (claim is not null)
+            {
+                // Setting number of products is cart of user current session.
+                HttpContext.Session.SetInt32(SD.SessionCart,
+                    _unitOfWork.ShoppingCart.GetAll(c => c.ApplicationUserId == claim.Value).Count());
+            }
+
             IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category");
             return View(productList);
         }
