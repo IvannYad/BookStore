@@ -10,11 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetProject.Models", "..\PetProject.Models\PetProject.Models.csproj", "{A425B610-C2A9-42F5-AD11-126D92DC1E48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetProject.Models", "..\PetProject.Models\PetProject.Models.csproj", "{A425B610-C2A9-42F5-AD11-126D92DC1E48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetProject.DataAccess", "..\PetProject.DataAccess\PetProject.DataAccess.csproj", "{0459B416-BEC1-4189-A05A-63639F4B011C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetProject.DataAccess", "..\PetProject.DataAccess\PetProject.DataAccess.csproj", "{0459B416-BEC1-4189-A05A-63639F4B011C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetProject.Utility", "..\PetProject.Utility\PetProject.Utility.csproj", "{43F6E9B3-FB6F-4858-9BB9-F2E6BE18A910}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetProject.Utility", "..\PetProject.Utility\PetProject.Utility.csproj", "{43F6E9B3-FB6F-4858-9BB9-F2E6BE18A910}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
