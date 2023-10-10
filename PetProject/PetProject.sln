@@ -3,18 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetProject", "PetProject.csproj", "{E8E71D03-D43B-4CE9-9054-2377EC6BB672}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetProject", "PetProject\PetProject.csproj", "{E8E71D03-D43B-4CE9-9054-2377EC6BB672}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2AE7964D-4F67-4D62-8B9F-B2E054E7D5E6}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetProject.Models", "..\PetProject.Models\PetProject.Models.csproj", "{A425B610-C2A9-42F5-AD11-126D92DC1E48}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetProject.Models", "PetProject.Models\PetProject.Models.csproj", "{A425B610-C2A9-42F5-AD11-126D92DC1E48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetProject.DataAccess", "..\PetProject.DataAccess\PetProject.DataAccess.csproj", "{0459B416-BEC1-4189-A05A-63639F4B011C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetProject.DataAccess", "PetProject.DataAccess\PetProject.DataAccess.csproj", "{0459B416-BEC1-4189-A05A-63639F4B011C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetProject.Utility", "..\PetProject.Utility\PetProject.Utility.csproj", "{43F6E9B3-FB6F-4858-9BB9-F2E6BE18A910}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetProject.Utility", "PetProject.Utility\PetProject.Utility.csproj", "{43F6E9B3-FB6F-4858-9BB9-F2E6BE18A910}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
