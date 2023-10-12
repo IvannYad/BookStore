@@ -51,7 +51,7 @@ namespace PetProject.Areas.Admin.Controllers
             OrderViewModel.OrderDetails = _unitOfWork.OrderDetail
                 .GetAll(d => d.OrderHeaderId == OrderViewModel.OrderHeader.Id, includeProperties: "Product");
 
-            string domain = "https://localhost:7176/";
+            string domain = Request.Scheme + "://" + Request.Host.Value + "/";
             var options = new SessionCreateOptions
             {
                 SuccessUrl = domain + $"admin/order/PaymentConfirmation?orderHeaderId={OrderViewModel.OrderHeader.Id}",
