@@ -38,8 +38,14 @@ namespace PetProject.Areas.Admin.Controllers
         public IActionResult GetAll()
         {
             List<ApplicationUser> userList = _context.ApplicationUsers.Include(u => u.Company).OrderBy(p => p.Name).ToList();
+            var roles = _context.Roles.ToList();
+            var userRoles = _context.UserRoles.ToList();
+
             foreach (var user in userList)
             {
+                var roleId = userRoles.FirstOrDefault(u => u.UserId == user.Id).RoleId;
+                user.RoleName = roles.FirstOrDefault(r => r.Id == roleId).Name;
+                
                 if (user.Company is null)
                     user.Company = new Company() { Name = "" };
             }
