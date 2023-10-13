@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
 using PetProject.Models.ViewModels;
@@ -176,6 +177,20 @@ namespace PetProject.Areas.Admin.Controllers
                 return Json(new { success = false, message = "Error while deleting" });
             }
 
+            // Path to folder, where all images of Product are stored.
+            string productPath = @"images\products\product-" + id;
+            string finalPath = Path.Combine(_webHostEnvironment.WebRootPath, productPath);
+            if (Directory.Exists(finalPath))
+            {
+                string[] imageFilePaths = Directory.GetFiles(finalPath);
+                foreach (var imagePath in imageFilePaths)
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+
+                Directory.Delete(finalPath);
+            }
+            
             _unitOfWork.Product.Remove(productToDelete);
             _unitOfWork.Save();
 
