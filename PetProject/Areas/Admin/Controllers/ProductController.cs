@@ -5,6 +5,7 @@ using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
 using PetProject.Models.ViewModels;
 using PetProject.Utility;
+using SQLitePCL;
 using System.Text.RegularExpressions;
 
 namespace PetProject.Areas.Admin.Controllers
@@ -116,6 +117,31 @@ namespace PetProject.Areas.Admin.Controllers
             }
         }
 
+        public IActionResult DeleteImage(int imageId)
+        {
+            var imageToDelete = _unitOfWork.ProductImage.Get(i => i.Id == imageId);
+            if (imageToDelete is null)
+                return NotFound();
+
+            if (!string.IsNullOrEmpty(imageToDelete.ImageUrl))
+            {
+                // Path to image to be deleted.
+                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, imageToDelete.ImageUrl.TrimStart('\\'));
+
+                // Delete image if exists.
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+            }
+
+            _unitOfWork.ProductImage.Remove(imageToDelete);
+            _unitOfWork.Save();
+
+            TempData["success"] = "Image deleted successfully";
+            return RedirectToAction("Upsert", new { id = imageToDelete.ProductId } );
+        }
+
         // Method for displaying page when some operation is unnsuccessfull.
         public IActionResult ShowPageOnUnsuccessfullOperation(ProductVM productVM)
         {
@@ -149,15 +175,6 @@ namespace PetProject.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Error while deleting" });
             }
-
-            //// Path to image to be deleted.
-            //var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, productToDelete.ImageUrl.Trim('\\'));
-
-            //// Delete image if exists.
-            //if (System.IO.File.Exists(oldImagePath))
-            //{
-            //    System.IO.File.Delete(oldImagePath);
-            //}
 
             _unitOfWork.Product.Remove(productToDelete);
             _unitOfWork.Save();
