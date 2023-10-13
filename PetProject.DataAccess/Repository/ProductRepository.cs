@@ -20,7 +20,22 @@ namespace PetProject.DataAccess.Repository
 
         public void Update(Product product)
         {
-            _context.Products.Update(product);
+            var productFromDb = _context.Products.FirstOrDefault(x => x.Id == product.Id);
+            if (productFromDb != null)
+            {
+                productFromDb.Title = product.Title;
+                productFromDb.ISBN = product.ISBN;
+                productFromDb.Price = product.Price;
+                productFromDb.Price50 = product.Price50;
+                productFromDb.Price100 = product.Price100;
+                productFromDb.ListPrice = product.ListPrice;
+                productFromDb.Description = product.Description;
+                productFromDb.CategoryId = product.CategoryId;
+                productFromDb.Author = product.Author;
+                productFromDb.ProductImages = product.ProductImages;
+
+                _context.Products.Update(productFromDb);
+            }
         }
     }
 }
