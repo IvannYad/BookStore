@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PetProject.DataAccess.Data;
 using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
+using PetProject.Models.ViewModels;
 using PetProject.Utility;
 using SQLitePCL;
 using System.Text.RegularExpressions;
@@ -17,7 +19,7 @@ namespace PetProject.Areas.Admin.Controllers
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        
         public UserController(ApplicationDbContext context)
         {
             _context = context;
@@ -38,8 +40,15 @@ namespace PetProject.Areas.Admin.Controllers
             var user = _context.ApplicationUsers.Include(u => u.Company).FirstOrDefault(u => u.Id == userId);
             if (user is null)
                 return NotFound();
-
-            return View();
+            var roleId = _context.UserRoles.FirstOrDefault(t => t.UserId == userId).RoleId;
+            var roleManagmentVM = new RoleManagmentVM()
+            {
+                User = user,
+                RoleList = _context.Roles.Select(r => new SelectListItem() { Text = r.Name, Value = r.Name }),
+                CompanyList = _context.Companies.Select(c => new SelectListItem() { Text = c.Name, Value = c.Id.ToString() })
+            };
+            roleManagmentVM.User.RoleName = _context.Roles.FirstOrDefault(r => r.Id == roleId).Name;
+            return View(roleManagmentVM);
         }
 
 
