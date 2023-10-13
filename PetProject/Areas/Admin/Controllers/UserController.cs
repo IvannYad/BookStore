@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,10 +20,13 @@ namespace PetProject.Areas.Admin.Controllers
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _context;
-        
-        public UserController(ApplicationDbContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public UserController(ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -51,6 +55,37 @@ namespace PetProject.Areas.Admin.Controllers
             return View(roleManagmentVM);
         }
 
+        [HttpPost]
+        public IActionResult RoleManagment(RoleManagmentVM roleManagmentVM)
+        {
+            string roleId = _context.UserRoles.FirstOrDefault(t => t.UserId == roleManagmentVM.User.Id).RoleId;
+            string oldRole = _context.Roles.FirstOrDefault(r => r.Id == roleId).Name;
+
+            if (roleManagmentVM.User.RoleName != oldRole)
+            {
+                // Role was updated.
+                var user = _context.ApplicationUsers.FirstOrDefault(u => u.Id == roleManagmentVM.User.Id);
+
+                if (user is null)
+                    return NotFound();
+                
+                if (roleManagmentVM.User.RoleName == SD.Role_Company)
+                {
+                    user.CompanyId = roleManagmentVM.User.CompanyId;
+                }
+
+                if (oldRole == SD.Role_Company)
+                {
+                    user.CompanyId = null;
+                }
+
+                _context.SaveChanges();
+                _userManager.RemoveFromRoleAsync(user, oldRole).GetAwaiter().GetResult();
+                _userManager.AddToRoleAsync(user, roleManagmentVM.User.RoleName).GetAwaiter().GetResult();
+            }
+
+            return RedirectToAction("Index");
+        }
 
         #region API CALLS
 
