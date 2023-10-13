@@ -23,7 +23,7 @@ namespace PetProject.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category");
+            IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category,ProductImages");
             return View(productList);
         }
 
@@ -32,7 +32,7 @@ namespace PetProject.Areas.Customer.Controllers
             if (id is null)
                 return NotFound();
 
-            Product product = _unitOfWork.Product.Get(p => p.Id == id, includeProperties: "Category");
+            Product product = _unitOfWork.Product.Get(p => p.Id == id, includeProperties: "Category,ProductImages");
             if (product is null)
                 return NotFound();
 
