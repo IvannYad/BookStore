@@ -29,7 +29,13 @@ namespace PetProject.Areas.Admin.Controllers
             return View();
         }
 
-        
+        [HttpGet]
+        public IActionResult RoleManagment()
+        {
+            return View();
+        }
+
+
         #region API CALLS
 
         // Method for retrieving all entities from db, and returning JSON file with data entites, that is 
@@ -52,10 +58,27 @@ namespace PetProject.Areas.Admin.Controllers
             return Json(new { data = userList });
         }
 
-        [HttpDelete]
-        public IActionResult Delete(int? id)
+        [HttpPost]
+        public IActionResult LockUnlock([FromBody]string userId)
         {
-            return Json(new { success = true, message = "Deleting successfull" });
+            var userFromDb = _context.ApplicationUsers.FirstOrDefault(u => u.Id == userId);
+            if (userFromDb is null)
+            {
+                return Json(new { success = false, message = "Error while Locking/unlocking" });
+            }
+
+            if (userFromDb.LockoutEnd is not null && userFromDb.LockoutEnd >= DateTime.Now)
+            {
+                // User is currently locked and we need to unlock them.
+                userFromDb.LockoutEnd = DateTime.Now;
+            }
+            else
+            {
+                userFromDb.LockoutEnd = DateTime.Now.AddYears(1000);
+            }
+
+            _context.SaveChanges();
+            return Json(new { success = true, message = "Operation successful" });
         }
 
         #endregion

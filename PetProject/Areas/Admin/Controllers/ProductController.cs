@@ -162,7 +162,7 @@ namespace PetProject.Areas.Admin.Controllers
             _unitOfWork.Product.Remove(productToDelete);
             _unitOfWork.Save();
 
-            return Json(new { success = true, message = "Deleting successfull" });
+            return Json(new { success = true, message = "Deleting successful" });
         }
 
         #endregion
