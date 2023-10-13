@@ -31,7 +31,7 @@ function loadDataTable() {
                                 <i class="bi bi-unlock-fill"></i> Unlock
                             </a>
                             <a class="btn btn-danger text-white" style="cursor:pointer; width:140px;">
-                                <i class="bi bi-pencil-sqiare"></i> Permission
+                                <i class="bi bi-pencil-square"></i> Permission
                             </a>
                         </div>
                         `
