@@ -50,5 +50,8 @@ namespace PetProject.Models
         public int CategoryId { get; set; }
         [ValidateNever]
         public Category Category { get; set; }
+        
+        [ValidateNever]
+        public List<ProductImage> ProductImages { get; set; }
     }
 }
