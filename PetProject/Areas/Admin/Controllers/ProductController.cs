@@ -73,28 +73,28 @@ namespace PetProject.Areas.Admin.Controllers
                     // Path to folder, where all images of Product will be stored.
                     string productPath = Path.Combine(wwwRootPath, @"images\product");
 
-                    if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
-                    {
-                        // Path to image to be deleted.
-                        var oldImagePath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.Trim('\\'));
+                    //if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
+                    //{
+                    //    // Path to image to be deleted.
+                    //    var oldImagePath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.Trim('\\'));
 
-                        // Delete image if exists.
-                        if (System.IO.File.Exists(oldImagePath))
-                        {
-                            System.IO.File.Delete(oldImagePath);
-                        }
-                    }
-                    using FileStream fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create);
-                    file.CopyTo(fileStream);
+                    //    // Delete image if exists.
+                    //    if (System.IO.File.Exists(oldImagePath))
+                    //    {
+                    //        System.IO.File.Delete(oldImagePath);
+                    //    }
+                    //}
+                    //using FileStream fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create);
+                    //file.CopyTo(fileStream);
 
-                    productVM.Product.ImageUrl = @"\images\product\" + fileName;
+                    //productVM.Product.ImageUrl = @"\images\product\" + fileName;
                 }
 
                 // Executing when user, creating new product, not specified file input
-                if (string.IsNullOrEmpty(productVM.Product.ImageUrl))
-                {
-                    return ShowPageOnUnsuccessfullOperation(productVM);
-                }
+                //if (string.IsNullOrEmpty(productVM.Product.ImageUrl))
+                //{
+                //    return ShowPageOnUnsuccessfullOperation(productVM);
+                //}
 
                 if (productVM.Product.Id is not 0)
                 {
@@ -150,14 +150,14 @@ namespace PetProject.Areas.Admin.Controllers
                 return Json(new { success = false, message = "Error while deleting"});
             }
 
-            // Path to image to be deleted.
-            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, productToDelete.ImageUrl.Trim('\\'));
+            //// Path to image to be deleted.
+            //var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, productToDelete.ImageUrl.Trim('\\'));
 
-            // Delete image if exists.
-            if (System.IO.File.Exists(oldImagePath))
-            {
-                System.IO.File.Delete(oldImagePath);
-            }
+            //// Delete image if exists.
+            //if (System.IO.File.Exists(oldImagePath))
+            //{
+            //    System.IO.File.Delete(oldImagePath);
+            //}
 
             _unitOfWork.Product.Remove(productToDelete);
             _unitOfWork.Save();
