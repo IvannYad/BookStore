@@ -30,8 +30,15 @@ namespace PetProject.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult RoleManagment()
+        public IActionResult RoleManagment(string? userId)
         {
+            if (userId is null)
+                return NotFound();
+
+            var user = _context.ApplicationUsers.Include(u => u.Company).FirstOrDefault(u => u.Id == userId);
+            if (user is null)
+                return NotFound();
+
             return View();
         }
 
