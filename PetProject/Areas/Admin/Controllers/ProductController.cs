@@ -47,7 +47,7 @@ namespace PetProject.Areas.Admin.Controllers
             }
             else
             {
-                productVM.Product = _unitOfWork.Product.Get(p => p.Id == id);
+                productVM.Product = _unitOfWork.Product.Get(p => p.Id == id, includeProperties: "ProductImages");
                 return View(productVM);
             }
         }
