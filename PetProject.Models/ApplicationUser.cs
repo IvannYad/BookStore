@@ -23,5 +23,8 @@ namespace PetProject.Models
         public int? CompanyId { get; set; }
         [ValidateNever]
         public Company? Company { get; set; }
+
+        [NotMapped]
+        public string RoleName { get; set; }
     }
 }
