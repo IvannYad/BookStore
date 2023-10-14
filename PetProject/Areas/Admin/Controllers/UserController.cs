@@ -19,14 +19,17 @@ namespace PetProject.Areas.Admin.Controllers
     [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
     public class UserController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UserController(ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager)
+        public UserController(IUnitOfWork unitOfWork,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
-            _context = context;
             _userManager = userManager;
+            _unitOfWork = unitOfWork;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -41,31 +44,33 @@ namespace PetProject.Areas.Admin.Controllers
             if (userId is null)
                 return NotFound();
 
-            var user = _context.ApplicationUsers.Include(u => u.Company).FirstOrDefault(u => u.Id == userId);
+            var user = _unitOfWork.ApplicationUser.Get(u => u.Id == userId, includeProperties:"Company");
             if (user is null)
                 return NotFound();
-            var roleId = _context.UserRoles.FirstOrDefault(t => t.UserId == userId).RoleId;
+            
             var roleManagmentVM = new RoleManagmentVM()
             {
                 User = user,
-                RoleList = _context.Roles.Select(r => new SelectListItem() { Text = r.Name, Value = r.Name }),
-                CompanyList = _context.Companies.Select(c => new SelectListItem() { Text = c.Name, Value = c.Id.ToString() })
+                RoleList = _roleManager.Roles.Select(r => new SelectListItem() { Text = r.Name, Value = r.Name }),
+                CompanyList = _unitOfWork.Company.GetAll().Select(c => new SelectListItem() { Text = c.Name, Value = c.Id.ToString() })
             };
-            roleManagmentVM.User.RoleName = _context.Roles.FirstOrDefault(r => r.Id == roleId).Name;
+            roleManagmentVM.User.RoleName = _userManager.GetRolesAsync(user)
+                .GetAwaiter().GetResult().FirstOrDefault();
             return View(roleManagmentVM);
         }
 
         [HttpPost]
         public IActionResult RoleManagment(RoleManagmentVM roleManagmentVM)
         {
-            string roleId = _context.UserRoles.FirstOrDefault(t => t.UserId == roleManagmentVM.User.Id).RoleId;
-            string oldRole = _context.Roles.FirstOrDefault(r => r.Id == roleId).Name;
+            string oldRole = _userManager.GetRolesAsync(_unitOfWork.ApplicationUser
+                .Get(u => u.Id == roleManagmentVM.User.Id))
+                .GetAwaiter().GetResult().FirstOrDefault();
+
+            var user = _unitOfWork.ApplicationUser.Get(u => u.Id == roleManagmentVM.User.Id);
 
             if (roleManagmentVM.User.RoleName != oldRole)
             {
                 // Role was updated.
-                var user = _context.ApplicationUsers.FirstOrDefault(u => u.Id == roleManagmentVM.User.Id);
-
                 if (user is null)
                     return NotFound();
                 
@@ -79,9 +84,20 @@ namespace PetProject.Areas.Admin.Controllers
                     user.CompanyId = null;
                 }
 
-                _context.SaveChanges();
+                _unitOfWork.ApplicationUser.Update(user);
+                _unitOfWork.Save();
+
                 _userManager.RemoveFromRoleAsync(user, oldRole).GetAwaiter().GetResult();
                 _userManager.AddToRoleAsync(user, roleManagmentVM.User.RoleName).GetAwaiter().GetResult();
+            }
+            else
+            {
+                if (oldRole == SD.Role_Company && user.CompanyId != roleManagmentVM.User.CompanyId)
+                {
+                    user.CompanyId = roleManagmentVM.User.CompanyId;
+                    _unitOfWork.ApplicationUser.Update(user);
+                    _unitOfWork.Save();
+                }
             }
 
             return RedirectToAction("Index");
@@ -94,14 +110,11 @@ namespace PetProject.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<ApplicationUser> userList = _context.ApplicationUsers.Include(u => u.Company).OrderBy(p => p.Name).ToList();
-            var roles = _context.Roles.ToList();
-            var userRoles = _context.UserRoles.ToList();
-
+            List<ApplicationUser> userList = _unitOfWork.ApplicationUser.GetAll(includeProperties: "Company").ToList();
+            
             foreach (var user in userList)
             {
-                var roleId = userRoles.FirstOrDefault(u => u.UserId == user.Id).RoleId;
-                user.RoleName = roles.FirstOrDefault(r => r.Id == roleId).Name;
+                user.RoleName = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault();
                 
                 if (user.Company is null)
                     user.Company = new Company() { Name = "" };
@@ -112,7 +125,7 @@ namespace PetProject.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult LockUnlock([FromBody]string userId)
         {
-            var userFromDb = _context.ApplicationUsers.FirstOrDefault(u => u.Id == userId);
+            var userFromDb = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
             if (userFromDb is null)
             {
                 return Json(new { success = false, message = "Error while Locking/unlocking" });
@@ -128,7 +141,8 @@ namespace PetProject.Areas.Admin.Controllers
                 userFromDb.LockoutEnd = DateTime.Now.AddYears(1000);
             }
 
-            _context.SaveChanges();
+            _unitOfWork.ApplicationUser.Update(userFromDb);
+            _unitOfWork.Save();
             return Json(new { success = true, message = "Operation successful" });
         }
 

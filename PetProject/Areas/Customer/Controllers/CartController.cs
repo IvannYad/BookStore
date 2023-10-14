@@ -33,8 +33,11 @@ namespace PetProject.Areas.Customer.Controllers
                 OrderHeader = new OrderHeader()
             };
 
+            IEnumerable<ProductImage> productImages = _unitOfWork.ProductImage.GetAll();
+
             foreach (var shoppingCartItem in ShoppingCartVM.ShoppingCartList)
             {
+                shoppingCartItem.Product.ProductImages = productImages.Where(pi => pi.ProductId == shoppingCartItem.ProductId).ToList();
                 shoppingCartItem.Price = GetPriceBasedOnQuantity(shoppingCartItem);
                 ShoppingCartVM.OrderHeader.OrderTotal += shoppingCartItem.Count * shoppingCartItem.Price;
             }

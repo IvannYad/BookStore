@@ -41,6 +41,11 @@ builder.Services.AddAuthentication().AddFacebook(option =>
     option.AppId = "701279481851189";
     option.AppSecret = "5b5689db917f728782863a8319be605e";
 });
+builder.Services.AddAuthentication().AddMicrosoftAccount(option =>
+{
+    option.ClientId = "eb091089-b79d-43ab-8bd3-54cb701ebfcf";
+    option.ClientSecret = "0CQ8Q~Fu56BXkiBYN58BZ6eeoDhWOdu0LjL7Xc7X";
+});
 
 
 // Adding session to services.

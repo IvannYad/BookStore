@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
 using PetProject.Models.ViewModels;
 using PetProject.Utility;
+using SQLitePCL;
 using System.Text.RegularExpressions;
 
 namespace PetProject.Areas.Admin.Controllers
@@ -15,7 +17,7 @@ namespace PetProject.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        // Field for saving or deleting file(e.g. image) in project folder.
+        // Field for saving or deleting files(e.g. image) in project folder.
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
@@ -47,14 +49,14 @@ namespace PetProject.Areas.Admin.Controllers
             }
             else
             {
-                productVM.Product = _unitOfWork.Product.Get(p => p.Id == id);
+                productVM.Product = _unitOfWork.Product.Get(p => p.Id == id, includeProperties: "ProductImages");
                 return View(productVM);
             }
         }
 
         // Method executes on clicking create(submit) of update(submit) button on Create or Edit web-page.
         [HttpPost]
-        public IActionResult Upsert(ProductVM productVM, IFormFile? file)
+        public IActionResult Upsert(ProductVM productVM, List<IFormFile> files)
         {
             if (productVM.Product.Title is not null && !char.IsUpper(productVM.Product.Title[0]))
             {
@@ -62,58 +64,83 @@ namespace PetProject.Areas.Admin.Controllers
             }
             if (ModelState.IsValid)
             {
-                // When user chooses file(image), it is saved to 'wwwrool\images\product' folder with unique name
+                if (productVM.Product.Id == 0)
+                    _unitOfWork.Product.Add(productVM.Product);
+                else
+                    _unitOfWork.Product.Update(productVM.Product);
+
+                _unitOfWork.Save();
+
+                // When user chooses files(image), it is saved to 'wwwrool\images\product' folder with unique name
                 // 'fileName' and then url of image(it`s path in wwwroot folder) is saved to 'ImageUrl' of Product model.
-                if (file is not null)
+                if (files is not null)
                 {
                     string wwwRootPath = _webHostEnvironment.WebRootPath;
 
-                    // Creating unique name for file with image.
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    // Path to folder, where all images of Product will be stored.
-                    string productPath = Path.Combine(wwwRootPath, @"images\product");
-
-                    if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
+                    foreach (IFormFile file in files)
                     {
-                        // Path to image to be deleted.
-                        var oldImagePath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.Trim('\\'));
+                        // Creating unique name for files with image.
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        // Path to folder, where all images of Product will be stored.
+                        string productPath = @"images\products\product-" + productVM.Product.Id;
+                        string finalPath = Path.Combine(wwwRootPath, productPath);
 
-                        // Delete image if exists.
-                        if (System.IO.File.Exists(oldImagePath))
+                        if (!Directory.Exists(finalPath))
+                            Directory.CreateDirectory(finalPath);
+
+                        using (FileStream fileStream = new FileStream(Path.Combine(finalPath, fileName), FileMode.Create))
                         {
-                            System.IO.File.Delete(oldImagePath);
+                            file.CopyTo(fileStream);
                         }
+
+                        ProductImage productImage = new()
+                        {
+                            ImageUrl = @"\" + productPath + @"\" + fileName,
+                            ProductId = productVM.Product.Id
+                        };
+
+                        if (productVM.Product.ProductImages is null)
+                            productVM.Product.ProductImages = new List<ProductImage>();
+
+                        productVM.Product.ProductImages.Add(productImage);
                     }
-                    using FileStream fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create);
-                    file.CopyTo(fileStream);
 
-                    productVM.Product.ImageUrl = @"\images\product\" + fileName;
-                }
-
-                // Executing when user, creating new product, not specified file input
-                if (string.IsNullOrEmpty(productVM.Product.ImageUrl))
-                {
-                    return ShowPageOnUnsuccessfullOperation(productVM);
-                }
-
-                if (productVM.Product.Id is not 0)
-                {
                     _unitOfWork.Product.Update(productVM.Product);
-                    TempData["success"] = "Book updated successfully";
+                    _unitOfWork.Save();
                 }
-                else
-                {
-                    _unitOfWork.Product.Add(productVM.Product);
-                    TempData["success"] = "Book created successfully";
-                }
-                
-                _unitOfWork.Save();
+
+                TempData["success"] = "Book created/updated successfully";
                 return RedirectToAction("Index");
             }
             else
             {
                 return ShowPageOnUnsuccessfullOperation(productVM);
             }
+        }
+
+        public IActionResult DeleteImage(int imageId)
+        {
+            var imageToDelete = _unitOfWork.ProductImage.Get(i => i.Id == imageId);
+            if (imageToDelete is null)
+                return NotFound();
+
+            if (!string.IsNullOrEmpty(imageToDelete.ImageUrl))
+            {
+                // Path to image to be deleted.
+                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, imageToDelete.ImageUrl.TrimStart('\\'));
+
+                // Delete image if exists.
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+            }
+
+            _unitOfWork.ProductImage.Remove(imageToDelete);
+            _unitOfWork.Save();
+
+            TempData["success"] = "Image deleted successfully";
+            return RedirectToAction("Upsert", new { id = imageToDelete.ProductId } );
         }
 
         // Method for displaying page when some operation is unnsuccessfull.
@@ -125,20 +152,20 @@ namespace PetProject.Areas.Admin.Controllers
                 Text = c.Name,
                 Value = c.Id.ToString()
             });
-        
+
             return View(productVM);
         }
 
-        
+
         #region API CALLS
 
-        // Method for retrieving all entities from db, and returning JSON file with data entites, that is 
+        // Method for retrieving all entities from db, and returning JSON files with data entites, that is 
         // displayed in DataTable on Index page.
         [HttpGet]
         public IActionResult GetAll()
         {
             List<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category").OrderBy(p => p.Title).ToList();
-            return Json(new { data = productList});
+            return Json(new { data = productList });
         }
 
         [HttpDelete]
@@ -147,18 +174,23 @@ namespace PetProject.Areas.Admin.Controllers
             var productToDelete = _unitOfWork.Product.Get(p => p.Id == id);
             if (productToDelete is null)
             {
-                return Json(new { success = false, message = "Error while deleting"});
+                return Json(new { success = false, message = "Error while deleting" });
             }
 
-            // Path to image to be deleted.
-            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, productToDelete.ImageUrl.Trim('\\'));
-
-            // Delete image if exists.
-            if (System.IO.File.Exists(oldImagePath))
+            // Path to folder, where all images of Product are stored.
+            string productPath = @"images\products\product-" + id;
+            string finalPath = Path.Combine(_webHostEnvironment.WebRootPath, productPath);
+            if (Directory.Exists(finalPath))
             {
-                System.IO.File.Delete(oldImagePath);
-            }
+                string[] imageFilePaths = Directory.GetFiles(finalPath);
+                foreach (var imagePath in imageFilePaths)
+                {
+                    System.IO.File.Delete(imagePath);
+                }
 
+                Directory.Delete(finalPath);
+            }
+            
             _unitOfWork.Product.Remove(productToDelete);
             _unitOfWork.Save();
 

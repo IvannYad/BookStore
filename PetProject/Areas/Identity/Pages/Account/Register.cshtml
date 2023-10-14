@@ -131,6 +131,12 @@
                                                     <i class="bi bi-facebook"></i> @provider.DisplayName
                                                 </button>
                                             }
+                                            else if (provider.DisplayName.ToLower() == "microsoft")
+                                            {
+                                                <button type="submit" class="btn text-center" style="background-color: black; color: white;" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                                                        <img src="~/images/icons8-microsoft-48.png" style=" width: 18px;"> @provider.DisplayName
+                                                </button>
+                                            }
                                             else
                                             {
                                                 <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
