@@ -1,4 +1,93 @@
-﻿@model IEnumerable<Product>
+﻿@using PetProject.DataAccess.Repository.IRepository
+
+@model IEnumerable<Product>
+@inject IUnitOfWork unitOfWork
+
+@{
+    var categories = unitOfWork.Category.GetAll()
+        .Select(c => new SelectListItem
+        {
+            Text = c.Name,
+            Value = c.Name,
+        });
+
+    var authors = unitOfWork.Product.GetAll()
+        .Select(p => new SelectListItem
+        {
+            Text = p.Author,
+            Value = p.Author,
+        });
+}
+<div class="row pb-3">
+    <div class="col-lg-3 col-sm-6" id="filterButton">
+        <button onclick="showFilterForm()" class="btn btn-primary bg-gradient border-0 form-control">
+            <i class="bi bi-funnel"></i> Filter
+        </button>
+    </div>
+    <div id="filterForm" class="col-12 mt-1 rounded card border-0 p-3 shadow border-top border-5 rounded" style="background: #f0ece2; display: none;">
+        <form asp-action="Filter" method="get" class="row d-flex justify-content-around">
+            <div class="col-5 m-2">
+                <input name="bookName" type="text" class="form-control border-0 shadow" placeholder="Book Title">
+            </div>
+            <div class="col-6 d-flex justify-content-around row m-2">
+                <div class="col-5 d-flex align-content-center">
+                    <label for="authorSelect" class="m-auto text-center"><b>Author</b></label>
+                </div>
+                <div class="col-5 d-flex align-content-center">
+                    <select name="author" class="form-select" id="authorSelect" asp-items="@authors">
+                        <option selected>All</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-5 d-flex justify-content-around row m-2">
+                <div class="col-5 d-flex align-content-center">
+                    <label for="categorySelect" class="m-auto text-center"><b>Category</b></label>
+                </div>
+                <div class="col-5 d-flex align-content-center">
+                    <select name="category" class="form-select" id="categorySelect" asp-items="@categories">
+                        <option selected>All</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-6 d-flex justify-content-around row m-2">
+                <div class="col-3 d-flex align-content-center">
+                    <label for="categorySelect" class="m-auto text-center"><b>Lowest Price</b></label>
+                </div>
+                <div class="col-9 d-flex justify-content-around row">
+                    <div class="col-6 row">
+                        <label for="lowPrice" class="m-auto text-center col-4 border-0 p-0">From</label>
+                        <div class="col-8">
+                            <input id="lowPrice" name="fromPrice" type="number" step="0.01" class="form-control border-0 shadow" value="-1">
+                        </div>
+
+                    </div>
+                    <div class="col-6 row">
+                        <label for="highPrice" class="m-auto text-center col-4 border-0 p-0">To</label>
+                        <div class="col-8">
+                            <input id="highPrice" name="toPrice" type="number" step="0.01" class="form-control border-0 shadow" value="-1">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-2 mt-4">
+                <div class="d-flex justify-content-around row">
+                    <button type="submit" class="btn btn-primary bg-gradient border-0 form-control">
+                        Apply
+                    </button>
+                </div>
+            </div>
+            <div class="col-9 m-2  mt-4">
+                <div></div>
+            </div>
+        </form>
+        <div class="col-2 d-flex justify-content-around row m-2">
+            <button onclick="Cancel()" class="btn btn-outline-primary form-control">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
 
 <div class="row pb-3">
     @foreach(var product in Model)
@@ -49,3 +138,17 @@
         </div>
     }
 </div>
+
+@section Scripts{
+    <script>
+        function showFilterForm(){
+            document.getElementById("filterButton").style.display = "none";
+            document.getElementById("filterForm").style.display = "block";
+        }
+
+        function Cancel() {
+            document.getElementById("filterButton").style.display = "block";
+            document.getElementById("filterForm").style.display = "none";
+        }
+    </script>
+}
