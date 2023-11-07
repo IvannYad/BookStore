@@ -85,6 +85,28 @@ namespace PetProject.Areas.Customer.Controllers
             return View();
         }
 
+        public IActionResult Filter(string bookName
+            , string author
+            , string category
+            , double fromPrice
+            , double toPrice)
+        {
+            IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category,ProductImages");
+
+            if (bookName is not null && string.IsNullOrEmpty(bookName!.Trim()))
+                productList = productList.Where(p => p.Title.Contains(bookName));
+            if (author != "All")
+                productList = productList.Where(p => p.Author.Contains(author));
+            if (category != "All")
+                productList = productList.Where(p => p.Category.Name.Contains(category));
+            if (fromPrice != -1)
+                productList = productList.Where(p => p.Price100 >= fromPrice);
+            if (toPrice != -1)
+                productList = productList.Where(p => p.Price100 <= toPrice);
+
+            return View(nameof(Index), productList);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

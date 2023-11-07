@@ -34,7 +34,7 @@
                     <label for="authorSelect" class="m-auto text-center"><b>Author</b></label>
                 </div>
                 <div class="col-5 d-flex align-content-center">
-                    <select class="form-select" id="authorSelect" asp-items="@authors">
+                    <select name="author" class="form-select" id="authorSelect" asp-items="@authors">
                         <option selected>All</option>
                     </select>
                 </div>
@@ -44,7 +44,7 @@
                     <label for="categorySelect" class="m-auto text-center"><b>Category</b></label>
                 </div>
                 <div class="col-5 d-flex align-content-center">
-                    <select class="form-select" id="categorySelect" asp-items="@categories">
+                    <select name="category" class="form-select" id="categorySelect" asp-items="@categories">
                         <option selected>All</option>
                     </select>
                 </div>
@@ -57,14 +57,14 @@
                     <div class="col-6 row">
                         <label for="lowPrice" class="m-auto text-center col-4 border-0 p-0">From</label>
                         <div class="col-8">
-                            <input id="lowPrice" name="fromPrice" type="number" step="0.01" class="form-control border-0 shadow">
+                            <input id="lowPrice" name="fromPrice" type="number" step="0.01" class="form-control border-0 shadow" value="-1">
                         </div>
 
                     </div>
                     <div class="col-6 row">
                         <label for="highPrice" class="m-auto text-center col-4 border-0 p-0">To</label>
                         <div class="col-8">
-                            <input id="highPrice" name="toPrice" type="number" step="0.01" class="form-control border-0 shadow">
+                            <input id="highPrice" name="toPrice" type="number" step="0.01" class="form-control border-0 shadow" value="-1">
                         </div>
 
                     </div>
