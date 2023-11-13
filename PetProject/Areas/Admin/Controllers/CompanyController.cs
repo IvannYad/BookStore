@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
+using PetProject.Services.Interfaces;
 using PetProject.Utility;
+using PetProject.Utility.CustomExceptions;
 using System.Text.RegularExpressions;
 
 namespace PetProject.Areas.Admin.Controllers
@@ -14,10 +16,12 @@ namespace PetProject.Areas.Admin.Controllers
     public class CompanyController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IValidator<Company> _validator;
 
-        public CompanyController(IUnitOfWork unitOfWork)
+        public CompanyController(IUnitOfWork unitOfWork, IValidator<Company> validator)
         {
             _unitOfWork = unitOfWork;
+            _validator = validator;
         }
 
         [HttpGet]
@@ -36,14 +40,15 @@ namespace PetProject.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Create(Company company)
         {
-            if (company.Name is not null && !Regex.IsMatch(company.Name, @"^[a-zA-Z]+$"))
+            try
             {
-                ModelState.AddModelError("Name", "'Company Name' must only consists of latin letters");
+                _validator.Validate(company);
             }
-            if (company.Name is not null && !char.IsUpper(company.Name[0]))
+            catch (CompanyValidationException ex)
             {
-                ModelState.AddModelError("Name", "'Company Name' must start with capital letter");
+                ModelState.AddModelError(ex.Field, ex.Message);
             }
+
             if (ModelState.IsValid)
             {
                 _unitOfWork.Company.Add(company);
@@ -75,14 +80,13 @@ namespace PetProject.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Edit(Company company)
         {
-            if (company.Name is not null && !Regex.IsMatch(company.Name, @"^[a-zA-Z]+$"))
+            try
             {
-                ModelState.AddModelError("Name", "'Company Name' must only consists of latin letters");
+                _validator.Validate(company);
             }
-
-            if (company.Name is not null && !char.IsUpper(company.Name[0]))
+            catch (CompanyValidationException ex)
             {
-                ModelState.AddModelError("Name", "'Company Name' must start with capital letter");
+                ModelState.AddModelError(ex.Field, ex.Message);
             }
 
             if (ModelState.IsValid)
