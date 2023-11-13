@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace PetProject.Services
 {
-    public class CategoryValidator : IValidator<Company>
+    public class CategoryValidator : IValidator<Category>
     {
-        public bool Validate(Company item)
+        public bool Validate(Category item)
         {
             if (item.Name is not null && !Regex.IsMatch(item.Name, @"^[a-zA-Z]+$"))
             {

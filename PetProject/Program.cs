@@ -28,6 +28,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 builder.Services.AddTransient<IValidator<PetProject.Models.Product>, BookValidator>();
 builder.Services.AddTransient<IValidator<PetProject.Models.Company>, CompanyValidator>();
+builder.Services.AddTransient<IValidator<PetProject.Models.Category>, CategoryValidator>();
 
 // .AddEntityFrameworkStores<ApplicationDbContext>() binds identity tables to entity framework,
 // that is all tables needed for identity will be managed with help of specified context.

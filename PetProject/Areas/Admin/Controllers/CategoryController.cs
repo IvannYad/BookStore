@@ -3,7 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using PetProject.DataAccess.Data;
 using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
+using PetProject.Services.Interfaces;
 using PetProject.Utility;
+using PetProject.Utility.CustomExceptions;
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace PetProject.Areas.Admin.Controllers
@@ -14,10 +17,12 @@ namespace PetProject.Areas.Admin.Controllers
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IValidator<Category> _validator;
 
-        public CategoryController(IUnitOfWork unitOfWork)
+        public CategoryController(IUnitOfWork unitOfWork, IValidator<Category> validator)
         {
             _unitOfWork = unitOfWork;
+            _validator = validator;
         }
 
         public IActionResult Index()
@@ -34,14 +39,15 @@ namespace PetProject.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Create(Category category)
         {
-            if (category.Name is not null && !Regex.IsMatch(category.Name, @"^[a-zA-Z]+$"))
+            try
             {
-                ModelState.AddModelError("Name", "'Category Name' must only consists of latin letters");
+                _validator.Validate(category);
             }
-            if (category.Name is not null && !char.IsUpper(category.Name[0]))
+            catch (CategoryValidationException ex)
             {
-                ModelState.AddModelError("Name", "'Category Name' must start with capital letter");
+                ModelState.AddModelError(ex.Field, ex.Message);
             }
+            
             if (ModelState.IsValid)
             {
                 _unitOfWork.Category.Add(category);
@@ -72,14 +78,13 @@ namespace PetProject.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Edit(Category category)
         {
-            if (category.Name is not null && !Regex.IsMatch(category.Name, @"^[a-zA-Z]+$"))
+            try
             {
-                ModelState.AddModelError("Name", "'Category Name' must only consists of latin letters");
+                _validator.Validate(category);
             }
-
-            if (category.Name is not null && !char.IsUpper(category.Name[0]))
+            catch (CategoryValidationException ex)
             {
-                ModelState.AddModelError("Name", "'Category Name' must start with capital letter");
+                ModelState.AddModelError(ex.Field, ex.Message);
             }
 
             if (ModelState.IsValid)
