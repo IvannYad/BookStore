@@ -13,12 +13,12 @@ namespace PetProject.Services
         {
             if (item.Name is not null && !Regex.IsMatch(item.Name, @"^[a-zA-Z]+$"))
             {
-                // throw new CompanyValidationException("'Company Name' must only consists of latin letters");
+                throw new CompanyValidationException("'Company Name' must only consists of latin letters");
             }
 
             if (item.Name is not null && !char.IsUpper(item.Name[0]))
             {
-                // throw new CompanyValidationException("'Company Name' must start with capital letter");
+                throw new CompanyValidationException("'Company Name' must start with capital letter");
             }
 
             return true;
