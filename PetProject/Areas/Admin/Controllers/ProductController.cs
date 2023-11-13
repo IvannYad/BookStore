@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
 using PetProject.Models.ViewModels;
+using PetProject.Services.Interfaces;
 using PetProject.Utility;
+using PetProject.Utility.CustomExceptions;
 using SQLitePCL;
 using System.Text.RegularExpressions;
 
@@ -56,12 +59,17 @@ namespace PetProject.Areas.Admin.Controllers
 
         // Method executes on clicking create(submit) of update(submit) button on Create or Edit web-page.
         [HttpPost]
-        public IActionResult Upsert(ProductVM productVM, List<IFormFile> files)
+        public IActionResult Upsert(ProductVM productVM, List<IFormFile> files, [FromServices]IValidator<Product> validator)
         {
-            if (productVM.Product.Title is not null && !char.IsUpper(productVM.Product.Title[0]))
+            try
             {
-                ModelState.AddModelError("Title", "'Book Title' must start with capital letter");
+                validator.Validate(productVM.Product);
             }
+            catch (BookValidationException ex)
+            {
+                ModelState.AddModelError("Title", ex.Message);
+            }
+            
             if (ModelState.IsValid)
             {
                 if (productVM.Product.Id == 0)
