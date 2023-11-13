@@ -11,7 +11,7 @@ namespace PetProject.Services
         {
             if (item.Title is not null && !char.IsUpper(item.Title[0]))
             {
-                throw new BookValidationException("'Book Title' must start with capital letter");
+                throw new BookValidationException("Product.Title", "'Book Title' must start with capital letter");
             }
 
             return true;

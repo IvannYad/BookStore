@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PetProject.DataAccess.Repository.IRepository;
 using PetProject.Models;
 using PetProject.Utility;
+using PetProject.Utility.CustomExceptions;
 using System.Text.RegularExpressions;
 
 namespace PetProject.Areas.Admin.Controllers
