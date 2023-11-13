@@ -10,6 +10,8 @@ using System.Configuration;
 using PetProject.Models;
 using Stripe;
 using PetProject.DataAccess.DbInitializer;
+using PetProject.Services.Interfaces;
+using PetProject.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+builder.Services.AddTransient<IValidator<PetProject.Models.Product>, BookValidator>();
 
 // .AddEntityFrameworkStores<ApplicationDbContext>() binds identity tables to entity framework,
 // that is all tables needed for identity will be managed with help of specified context.
