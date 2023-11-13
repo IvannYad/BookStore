@@ -80,14 +80,13 @@ namespace PetProject.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Edit(Company company)
         {
-            if (company.Name is not null && !Regex.IsMatch(company.Name, @"^[a-zA-Z]+$"))
+            try
             {
-                ModelState.AddModelError("Name", "'Company Name' must only consists of latin letters");
+                _validator.Validate(company);
             }
-
-            if (company.Name is not null && !char.IsUpper(company.Name[0]))
+            catch (CompanyValidationException ex)
             {
-                ModelState.AddModelError("Name", "'Company Name' must start with capital letter");
+                ModelState.AddModelError(ex.Field, ex.Message);
             }
 
             if (ModelState.IsValid)
