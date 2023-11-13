@@ -1,6 +1,7 @@
 ﻿using PetProject.Models;
 using PetProject.Models.ViewModels;
 using PetProject.Services.Interfaces;
+using PetProject.Utility.CustomExceptions;
 
 namespace PetProject.Services
 {
@@ -10,7 +11,7 @@ namespace PetProject.Services
         {
             if (item.Title is not null && !char.IsUpper(item.Title[0]))
             {
-                // throw new InvalidBookValidationException("'Book Title' must start with capital letter");
+                throw new BookValidationException("'Book Title' must start with capital letter");
             }
 
             return true;
