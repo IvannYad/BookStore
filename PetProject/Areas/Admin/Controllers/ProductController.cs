@@ -67,7 +67,7 @@ namespace PetProject.Areas.Admin.Controllers
             }
             catch (BookValidationException ex)
             {
-                ModelState.AddModelError("Title", ex.Message);
+                ModelState.AddModelError("Product.Title", ex.Message);
             }
             
             if (ModelState.IsValid)
