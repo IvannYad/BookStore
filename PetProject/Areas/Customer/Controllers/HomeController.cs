@@ -93,8 +93,8 @@ namespace PetProject.Areas.Customer.Controllers
         {
             IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category,ProductImages");
 
-            if (bookName is not null && string.IsNullOrEmpty(bookName!.Trim()))
-                productList = productList.Where(p => p.Title.Contains(bookName));
+            if (bookName is not null && !string.IsNullOrEmpty(bookName!.Trim()))
+                productList = productList.Where(p => p.Title.ToLower().Contains(bookName.ToLower()));
             if (author != "All")
                 productList = productList.Where(p => p.Author.Contains(author));
             if (category != "All")
